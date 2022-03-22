@@ -2,6 +2,7 @@ package com.ankoki.roku.bukkit;
 
 import com.ankoki.roku.bukkit.advancements.Advancement;
 import com.ankoki.roku.bukkit.advancements.AdvancementTrigger;
+import com.ankoki.roku.bukkit.advancements.Background;
 import com.ankoki.roku.bukkit.advancements.Frame;
 import com.ankoki.roku.bukkit.advancements.exceptions.InvalidAdvancementException;
 import org.bukkit.Material;
@@ -30,7 +31,7 @@ public class BukkitImpl extends JavaPlugin {
                     .setFrame(Frame.CHALLENGE)
                     .setAnnounced(true)
                     .setIcon(Material.DIAMOND)
-                    .setBackground("minecraft:yellow_wool")
+                    .setBackground(Background.END)
                     .addCriteria("default", AdvancementTrigger.IMPOSSIBLE)
                     .load();
             BukkitImpl.info("Advancement loaded");

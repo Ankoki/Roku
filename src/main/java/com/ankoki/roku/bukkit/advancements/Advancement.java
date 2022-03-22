@@ -259,6 +259,17 @@ public class Advancement {
     /**
      * The directory for the background to use in this advancement tab
      * (used only for the root advancement).
+     * @param background the background.
+     * @return current Advancement for chaining.
+     */
+    public Advancement setBackground(Background background) {
+        this.setMapValue("display", "background", background.getLink());
+        return this;
+    }
+
+    /**
+     * The directory for the background to use in this advancement tab
+     * (used only for the root advancement). Use namespaces, or {@link Advancement#setBackground(Background)}
      * @param path the path.
      * @return current Advancement for chaining.
      */
