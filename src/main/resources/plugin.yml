@@ -1,0 +1,8 @@
+# Incase bukkit is trying to use Roku as a plugin.
+main: com.ankoki.roku.bukkit.BukkitImpl
+name: Roku
+version: 1.0
+author: Ankoki
+commands:
+  roku:
+    description: debug command.

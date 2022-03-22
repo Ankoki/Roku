@@ -1,0 +1,24 @@
+plugins {
+    id 'java'
+}
+
+group 'com.ankoki'
+version '1.0'
+
+repositories {
+    mavenCentral()
+    maven { url 'https://papermc.io/repo/repository/maven-public/' }
+}
+
+dependencies {
+    compileOnly 'io.papermc.paper:paper-api:1.18.1-R0.1-SNAPSHOT'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    ant.replace(file : 'src/main/resources/plugin.yml', token: '@VERSION@', value: this.version)
+    archiveName 'Roku.jar'
+}
