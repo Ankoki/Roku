@@ -5,7 +5,7 @@ public class MalformedJsonException extends Exception {
     private final String message;
 
     public MalformedJsonException() {
-        this.message = "There was an issue parsing your JSON!";
+        this.message = "There was an issue parsing your JSON.";
     }
 
     public MalformedJsonException(String message) {

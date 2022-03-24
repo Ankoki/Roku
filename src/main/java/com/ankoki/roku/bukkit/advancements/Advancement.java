@@ -75,6 +75,54 @@ public class Advancement {
     }
 
     /**
+     * Revokes a given criteria under an achievement.
+     * @param player the player to revoke.
+     * @param advancement the advancement.
+     * @return true if the given criteria was revoked.
+     */
+    public static boolean revokeAdvancement(Player player, Advancement advancement, String criteria) {
+        if (player == null || advancement == null || criteria == null) return false;
+        return Advancement.revokeAdvancement(player, advancement.getAdvancement(), criteria);
+    }
+
+    /**
+     * Revokes a given criteria under an achievement.
+     * @param player the player to revoke.
+     * @param advancement the advancement.
+     * @return true if the given criteria was revoked.
+     */
+    public static boolean revokeAdvancement(Player player, org.bukkit.advancement.Advancement advancement, String criteria) {
+        if (player == null || advancement == null || criteria == null) return false;
+        AdvancementProgress progress = player.getAdvancementProgress(advancement);
+        return progress.revokeCriteria(criteria);
+    }
+
+    /**
+     * Automatically revokes all given criteria under an achievement, resetting it.
+     * @param player the player to revoke.
+     * @param advancement the advancement.
+     * @return true if all criteria was revoked.
+     */
+    public static boolean revokeAdvancement(Player player, Advancement advancement) {
+        if (player == null || advancement == null) return false;
+        return Advancement.revokeAdvancement(player, advancement.getAdvancement());
+    }
+
+    /**
+     * Automatically revokes all given criteria under an achievement, resetting it.
+     * @param player the player to revoke.
+     * @param advancement the advancement.
+     * @return true if all criteria was revoked.
+     */
+    public static boolean revokeAdvancement(Player player, org.bukkit.advancement.Advancement advancement) {
+        if (player == null || advancement == null) return false;
+        AdvancementProgress progress = player.getAdvancementProgress(advancement);
+        boolean revoked = true;
+        for (String criteria : progress.getAwardedCriteria()) if (!progress.revokeCriteria(criteria)) revoked = false;
+        return revoked;
+    }
+
+    /**
      * Removes an advancement from the persistent storage.
      * @param key the key of the advancement.
      * @param update true to reload data and remove from current server.
@@ -99,6 +147,15 @@ public class Advancement {
     }
 
     /**
+     * Checks if an advancement exists.
+     * @param key the key to check.
+     * @return true if it exists, false otherwise.
+     */
+    public static boolean advancementExists(NamespacedKey key) {
+        return Advancement.getAdvancement(key) != null;
+    }
+
+    /**
      * <strong>INTERNAL USE ONLY</strong>
      * <p>
      * Validates the JSON to make sure every required key is included,
@@ -111,23 +168,23 @@ public class Advancement {
             Object display = json.get("display");
             if (display instanceof Map<?,?> displayMap) {
                 if (!displayMap.containsKey("title") || !displayMap.containsKey("description"))
-                    throw new InvalidAdvancementException("Missing 'title' and/or 'description' value!");
-                if (!displayMap.containsKey("icon")) throw new InvalidAdvancementException("Missing 'icon' value!");
+                    throw new InvalidAdvancementException("Missing 'title' and/or 'description' value.");
+                if (!displayMap.containsKey("icon")) throw new InvalidAdvancementException("Missing 'icon' value.");
                 Object item = displayMap.get("icon");
                 if (item instanceof Map itemMap) {
                     if (!itemMap.containsKey("item")) throw new InvalidAdvancementException();
                 } else throw new InvalidAdvancementException();
             } else throw new InvalidAdvancementException();
 
-        } else throw new InvalidAdvancementException("Missing 'display' value!");
+        } else throw new InvalidAdvancementException("Missing 'display' value.");
 
-        if (!json.containsKey("criteria")) throw new InvalidAdvancementException("Missing 'criteria' value!");
+        if (!json.containsKey("criteria")) throw new InvalidAdvancementException("Missing 'criteria' value.");
         Object criteria = json.get("criteria");
         if (criteria instanceof Map<?,?> criteriaMap) {
             for (Object object : criteriaMap.entrySet()) {
                 Map.Entry entry = (Map.Entry) object;
                 if (entry.getValue() instanceof Map criterionMap) {
-                    if (!criterionMap.containsKey("trigger")) throw new InvalidAdvancementException("No trigger found in criterion '" + entry.getKey() + "'");
+                    if (!criterionMap.containsKey("trigger")) throw new InvalidAdvancementException("No trigger found in criterion '" + entry.getKey() + "'.");
                 } else throw new InvalidAdvancementException();
             }
         } else throw new InvalidAdvancementException();
@@ -413,7 +470,7 @@ public class Advancement {
      */
     public void load() throws InvalidAdvancementException {
         this.validateJson();
-        if (key == null) throw new InvalidAdvancementException("The NamespacedKey was not set!");
+        if (key == null) throw new InvalidAdvancementException("The NamespacedKey was not set.");
         advancement = BukkitImpl.getUnsafe().loadAdvancement(key, json.toString());
     }
 
