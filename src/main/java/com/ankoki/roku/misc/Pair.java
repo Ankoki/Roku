@@ -35,8 +35,8 @@ public class Pair<T, K>{
     }
 
     public boolean isIdentical() {
-        if (first == null && second == null) return true;
-        if (first == null || second == null) return false;
+        if (!this.hasFirst() && !this.hasSecond()) return true;
+        if (!this.hasFirst() || !this.hasSecond()) return false;
         return first.equals(second);
     }
 }

@@ -97,9 +97,9 @@ public class BukkitImpl extends JavaPlugin {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (this.isDev()) {
             if (sender instanceof Player player && args.length == 1) {
-                if (args[0].equalsIgnoreCase("give"))
+                if (args[0].equalsIgnoreCase("advgive"))
                     Advancement.awardAdvancement(player, Advancement.getAdvancement(ADVANCEMENT_KEY));
-                else if (args[0].equalsIgnoreCase("revoke"))
+                else if (args[0].equalsIgnoreCase("advrevoke"))
                     Advancement.revokeAdvancement(player, Advancement.getAdvancement(ADVANCEMENT_KEY));
                 else if (args[0].equalsIgnoreCase("gui")) TEST_GUI.openTo(player);
                 sender.sendMessage(COMMAND_PREFIX + "done something with the arg " + args[0]);
