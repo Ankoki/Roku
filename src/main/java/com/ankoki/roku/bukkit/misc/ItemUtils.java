@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Base64;
 import java.util.List;
@@ -25,7 +26,7 @@ public class ItemUtils {
      * @param lore the lore of the item.
      * @return the ItemStack
      */
-    public static ItemStack getSkull(String link, int amount, String name, String... lore) {
+    public static ItemStack getSkull(@NotNull String link, int amount, String name, String... lore) {
         ItemStack item = new ItemStack(Material.PLAYER_HEAD, amount);
         SkullMeta meta = (SkullMeta) item.getItemMeta();
         PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID());
@@ -46,7 +47,7 @@ public class ItemUtils {
      * @param lore the lore of the item.
      * @return the ItemStack
      */
-    public static ItemStack getSkull(String link, String name, String... lore) {
+    public static ItemStack getSkull(@NotNull String link, String name, String... lore) {
         return ItemUtils.getSkull(link, 1, name, lore);
     }
 
@@ -56,7 +57,7 @@ public class ItemUtils {
      * 'http://textures.minecraft.net/texture/1e0a82f6e5221c6de51c4e463d915a5109e93b6b6d904bd9e72acc5cd1d0fa9e'
      * @return the ItemStack
      */
-    public static ItemStack getSkull(String link) {
+    public static ItemStack getSkull(@NotNull String link) {
         return ItemUtils.getSkull(link, 1, null);
     }
 
@@ -68,7 +69,7 @@ public class ItemUtils {
      * @param lore the lore.
      * @return the new ItemStack.
      */
-    public static ItemStack from(String name, Material material, int amount, String... lore) {
+    public static ItemStack from(String name, @NotNull Material material, int amount, String... lore) {
         ItemStack item = new ItemStack(material, amount);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(name == null ? "§f" : name);
@@ -84,7 +85,7 @@ public class ItemUtils {
      * @param lore the lore.
      * @return the new ItemStack.
      */
-    public static ItemStack from(String name, Material material, String... lore) {
+    public static ItemStack from(String name, @NotNull Material material, String... lore) {
         return ItemUtils.from(name, material, 1, lore);
     }
 
@@ -94,11 +95,21 @@ public class ItemUtils {
      * @param stack the item to set glowing.
      * @return the glowing item.
      */
-    public static ItemStack makeGlow(ItemStack stack) {
+    public static ItemStack makeGlow(@NotNull ItemStack stack) {
         stack.addUnsafeEnchantment(stack.getType() == Material.BOW ?
                 Enchantment.RIPTIDE : Enchantment.ARROW_INFINITE, 1);
         ItemMeta meta = stack.getItemMeta();
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        stack.setItemMeta(meta);
+        return stack;
+    }
+
+    /**
+     *
+     */
+    public static ItemStack getBlank(@NotNull ItemStack stack) {
+        ItemMeta meta = stack.getItemMeta();
+        meta.setDisplayName("§f");
         stack.setItemMeta(meta);
         return stack;
     }

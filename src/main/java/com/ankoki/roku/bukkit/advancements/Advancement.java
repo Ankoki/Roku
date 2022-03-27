@@ -8,6 +8,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class Advancement {
      * @param criteria the criteria to complete.
      * @return true if awarded; false if criteria does not exist or already awarded.
      */
-    public static boolean awardAdvancement(Player player, Advancement advancement, String criteria) {
+    public static boolean awardAdvancement(@NotNull Player player, @NotNull Advancement advancement, @NotNull String criteria) {
         return player.getAdvancementProgress(advancement.getAdvancement()).awardCriteria(criteria);
     }
 
@@ -44,8 +45,7 @@ public class Advancement {
      * @param criteria the criteria to complete.
      * @return true if awarded; false if criteria does not exist or already awarded.
      */
-    public static boolean awardAdvancement(Player player, org.bukkit.advancement.Advancement advancement, String criteria) {
-        if (player == null || advancement == null || criteria == null) return false;
+    public static boolean awardAdvancement(@NotNull Player player, @NotNull org.bukkit.advancement.Advancement advancement, @NotNull String criteria) {
         return player.getAdvancementProgress(advancement).awardCriteria(criteria);
     }
 
@@ -55,8 +55,8 @@ public class Advancement {
      * @param advancement the advancement to give.
      * @return true if awarded, false if not
      */
-    public static boolean awardAdvancement(Player player, Advancement advancement) {
-        if (player == null || advancement == null || advancement.getAdvancement() == null) return false;
+    public static boolean awardAdvancement(@NotNull Player player, @NotNull Advancement advancement) {
+        if (advancement.getAdvancement() == null) return false;
         return Advancement.awardAdvancement(player, advancement.getAdvancement());
     }
 
@@ -66,8 +66,7 @@ public class Advancement {
      * @param advancement the advancement to give.
      * @return true if awarded, false if not
      */
-    public static boolean awardAdvancement(Player player, org.bukkit.advancement.Advancement advancement) {
-        if (player == null || advancement == null) return false;
+    public static boolean awardAdvancement(@NotNull Player player, @NotNull org.bukkit.advancement.Advancement advancement) {
         AdvancementProgress progress = player.getAdvancementProgress(advancement);
         boolean awarded = true;
         for (String criteria : progress.getRemainingCriteria()) if (!progress.awardCriteria(criteria)) awarded = false;
@@ -80,8 +79,7 @@ public class Advancement {
      * @param advancement the advancement.
      * @return true if the given criteria was revoked.
      */
-    public static boolean revokeAdvancement(Player player, Advancement advancement, String criteria) {
-        if (player == null || advancement == null || criteria == null) return false;
+    public static boolean revokeAdvancement(@NotNull Player player, @NotNull Advancement advancement, @NotNull String criteria) {
         return Advancement.revokeAdvancement(player, advancement.getAdvancement(), criteria);
     }
 
@@ -91,8 +89,7 @@ public class Advancement {
      * @param advancement the advancement.
      * @return true if the given criteria was revoked.
      */
-    public static boolean revokeAdvancement(Player player, org.bukkit.advancement.Advancement advancement, String criteria) {
-        if (player == null || advancement == null || criteria == null) return false;
+    public static boolean revokeAdvancement(@NotNull Player player, @NotNull org.bukkit.advancement.Advancement advancement, @NotNull String criteria) {
         AdvancementProgress progress = player.getAdvancementProgress(advancement);
         return progress.revokeCriteria(criteria);
     }
@@ -103,8 +100,7 @@ public class Advancement {
      * @param advancement the advancement.
      * @return true if all criteria was revoked.
      */
-    public static boolean revokeAdvancement(Player player, Advancement advancement) {
-        if (player == null || advancement == null) return false;
+    public static boolean revokeAdvancement(@NotNull Player player, @NotNull Advancement advancement) {
         return Advancement.revokeAdvancement(player, advancement.getAdvancement());
     }
 
@@ -114,8 +110,7 @@ public class Advancement {
      * @param advancement the advancement.
      * @return true if all criteria was revoked.
      */
-    public static boolean revokeAdvancement(Player player, org.bukkit.advancement.Advancement advancement) {
-        if (player == null || advancement == null) return false;
+    public static boolean revokeAdvancement(@NotNull Player player, @NotNull org.bukkit.advancement.Advancement advancement) {
         AdvancementProgress progress = player.getAdvancementProgress(advancement);
         boolean revoked = true;
         for (String criteria : progress.getAwardedCriteria()) if (!progress.revokeCriteria(criteria)) revoked = false;
@@ -142,7 +137,7 @@ public class Advancement {
      * @param key key of advancement.
      * @return the found advancement, null if it doesn't exist.
      */
-    public static org.bukkit.advancement.Advancement getAdvancement(NamespacedKey key) {
+    public static org.bukkit.advancement.Advancement getAdvancement(@NotNull NamespacedKey key) {
         return BukkitImpl.getInstance().getServer().getAdvancement(key);
     }
 
@@ -151,7 +146,7 @@ public class Advancement {
      * @param key the key to check.
      * @return true if it exists, false otherwise.
      */
-    public static boolean advancementExists(NamespacedKey key) {
+    public static boolean advancementExists(@NotNull NamespacedKey key) {
         return Advancement.getAdvancement(key) != null;
     }
 
@@ -163,7 +158,7 @@ public class Advancement {
      * @param json json to validate.
      * @throws InvalidAdvancementException if there are any errors with the provided json.
      */
-    private static void validateJson(JSONWrapper json) throws InvalidAdvancementException {
+    private static void validateJson(@NotNull JSONWrapper json) throws InvalidAdvancementException {
         if (json.containsKey("display")) {
             Object display = json.get("display");
             if (display instanceof Map<?,?> displayMap) {
@@ -237,7 +232,7 @@ public class Advancement {
      * @param key the key.
      * @return current Advancement for chaining.
      */
-    public Advancement setKey(NamespacedKey key) {
+    public Advancement setKey(@NotNull NamespacedKey key) {
         this.key = key;
         return this;
     }
@@ -249,7 +244,7 @@ public class Advancement {
      * @param material the material.
      * @return current Advancement for chaining.
      */
-    public Advancement setIcon(Material material) {
+    public Advancement setIcon(@NotNull Material material) {
         // Can't use this.setMapValue() here because there is a parent and child map.
         Map<Object, Object> display = (Map<Object, Object>) json.getOrDefault("display", new HashMap<>());
         Map<Object, Object> icon = (Map<Object, Object>) display.getOrDefault("icon", new HashMap<>());
@@ -266,7 +261,7 @@ public class Advancement {
      * @param stack the item.
      * @return current Advancement for chaining.
      */
-    public Advancement setIcon(ItemStack stack) {
+    public Advancement setIcon(@NotNull ItemStack stack) {
         this.setIcon(stack.getType());
         return this;
     }
@@ -277,7 +272,7 @@ public class Advancement {
      * @param snbt the SNBT.
      * @return current Advancement for chaining.
      */
-    public Advancement setSNBT(String snbt) {
+    public Advancement setSNBT(@NotNull String snbt) {
         // Can't use this.setMapValue() here because there is a parent and child map.
         Map<Object, Object> display = (Map<Object, Object>) json.getOrDefault("display", new HashMap<>());
         Map<Object, Object> icon = (Map<Object, Object>) display.getOrDefault("icon", new HashMap<>());
@@ -294,7 +289,7 @@ public class Advancement {
      * @param title the title.
      * @return current Advancement for chaining.
      */
-    public Advancement setTitle(String title) {
+    public Advancement setTitle(@NotNull String title) {
         // TextComponent component = new TextComponent(title);
         // this.setMapValue("display", "title", ComponentSerializer.toString(component));
         this.setMapValue("display", "title", title);
@@ -308,7 +303,7 @@ public class Advancement {
      * @param type the frame.
      * @return current Advancement for chaining.
      */
-    public Advancement setFrame(Frame type) {
+    public Advancement setFrame(@NotNull Frame type) {
         this.setMapValue("display", "frame", type.toString());
         return this;
     }
@@ -319,7 +314,7 @@ public class Advancement {
      * @param background the background.
      * @return current Advancement for chaining.
      */
-    public Advancement setBackground(Background background) {
+    public Advancement setBackground(@NotNull Background background) {
         this.setMapValue("display", "background", background.getLink());
         return this;
     }
@@ -330,7 +325,7 @@ public class Advancement {
      * @param path the path.
      * @return current Advancement for chaining.
      */
-    public Advancement setBackground(String path) {
+    public Advancement setBackground(@NotNull String path) {
         this.setMapValue("display", "background", "path");
         return this;
     }
@@ -343,7 +338,7 @@ public class Advancement {
      * @param description the description.
      * @return current Advancement for chaining.
      */
-    public Advancement setDescription(String description) {
+    public Advancement setDescription(@NotNull String description) {
         // TextComponent component = new TextComponent(description);
         // this.setMapValue("display", "description", ComponentSerializer.toString(component));
         this.setMapValue("display", "description", description);
@@ -382,7 +377,7 @@ public class Advancement {
      * @param parent the parent directory.
      * @return current Advancement for chaining.
      */
-    public Advancement setParent(String parent) {
+    public Advancement setParent(@NotNull String parent) {
         json.put("parent", parent);
         return this;
     }
@@ -397,7 +392,7 @@ public class Advancement {
      * @return current Advancement for chaining.
      * TODO add conditions.
      */
-    public Advancement addCriteria(String criteria, AdvancementTrigger trigger) {
+    public Advancement addCriteria(@NotNull String criteria, @NotNull AdvancementTrigger trigger) {
         // Can't use this.setMapValue() here because there is a parent and child map.
         Map<Object, Object> parent = (Map<Object, Object>) json.getOrDefault("criteria", new HashMap<>());
         Map<Object, Object> child = (Map<Object, Object>) parent.getOrDefault(criteria, new HashMap<>());
@@ -415,7 +410,7 @@ public class Advancement {
      * @param map containing sublists of criterions.
      * @return current Advancement for chaining.
      */
-    public Advancement setRequirements(Map map) {
+    public Advancement setRequirements(@NotNull Map map) {
         json.put("requirements", map);
         return this;
     }
@@ -430,7 +425,7 @@ public class Advancement {
      * @param reward the reward object to pass based on the type.
      * @return current Advancement for chaining.
      */
-    public Advancement addReward(RewardType type, Object reward) {
+    public Advancement addReward(@NotNull RewardType type, @NotNull Object reward) {
         Map<Object, Object> parent = (Map<Object, Object>) json.getOrDefault("rewards", new HashMap<>());
         switch (type) {
             case RECIPE:

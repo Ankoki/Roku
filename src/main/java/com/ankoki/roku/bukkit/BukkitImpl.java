@@ -7,6 +7,7 @@ import com.ankoki.roku.bukkit.advancements.Frame;
 import com.ankoki.roku.bukkit.advancements.exceptions.InvalidAdvancementException;
 import com.ankoki.roku.bukkit.guis.GUI;
 import com.ankoki.roku.bukkit.guis.GUIHandler;
+import com.ankoki.roku.bukkit.misc.ItemUtils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.UnsafeValues;
@@ -14,8 +15,11 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class BukkitImpl extends JavaPlugin {
 
@@ -26,7 +30,10 @@ public class BukkitImpl extends JavaPlugin {
 
     // DEV
     private final NamespacedKey ADVANCEMENT_KEY = new NamespacedKey(this, "roku_test");
-    private final GUI TEST_GUI = new GUI();
+    private final GUI TEST_GUI = new GUI("§eVoltage §7~ §cITZY", 27)
+            .setShape(List.of("xxxxxxxxx", "xxxxAxxxx", "xxxxxxxxx"))
+            .setShapeItem('x', ItemUtils.getBlank(new ItemStack(Material.BLACK_STAINED_GLASS_PANE)))
+            .setShapeItem('A', ItemUtils.getSkull("http://textures.minecraft.net/texture/3ec6c6e00a6ad055f250546a8c0da070df4613a5f65517a9933bd5de969d8406"));
 
     @Override
     public void onEnable() {
@@ -34,9 +41,7 @@ public class BukkitImpl extends JavaPlugin {
         if (this.isDev()) {
             BukkitImpl.warning("Development build detected, if this is not intended, please report this on the github.");
             this.advancementTest();
-            TEST_GUI.setName("§eVoltage §7~ §cITZY")
-                    .setSize(27)
-                    .addClickEvent(event -> {
+            TEST_GUI.addClickEvent(event -> {
                         event.setCancelled(true);
                         HumanEntity entity = event.getWhoClicked();
                         entity.sendMessage(COMMAND_PREFIX + "§9Liquid Smooth §7~ §8Mitski");
