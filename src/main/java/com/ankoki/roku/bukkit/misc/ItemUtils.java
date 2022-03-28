@@ -20,13 +20,15 @@ public class ItemUtils {
     /**
      * Gets an item with the skull from a textures.minecraft link.
      * @param link the link. Has to have the format of <p>
-     * 'http://textures.minecraft.net/texture/1e0a82f6e5221c6de51c4e463d915a5109e93b6b6d904bd9e72acc5cd1d0fa9e'
+     * 'http://textures.minecraft.net/texture/1e0a82f6e5221c6de51c4e463d915a5109e93b6b6d904bd9e72acc5cd1d0fa9e' <p>
+     *             the link is optional.
      * @param amount the amount of the item.
      * @param name the name of the item.
      * @param lore the lore of the item.
      * @return the ItemStack
      */
     public static ItemStack getSkull(@NotNull String link, int amount, String name, String... lore) {
+        if (!link.startsWith("http://textures.minecraft.net/texture/")) link = "http://textures.minecraft.net/texture/" + link;
         ItemStack item = new ItemStack(Material.PLAYER_HEAD, amount);
         SkullMeta meta = (SkullMeta) item.getItemMeta();
         PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID());
@@ -42,7 +44,8 @@ public class ItemUtils {
     /**
      * Gets an item with the skull from a textures.minecraft link.
      * @param link the link. Has to have the format of <p>
-     * 'http://textures.minecraft.net/texture/1e0a82f6e5221c6de51c4e463d915a5109e93b6b6d904bd9e72acc5cd1d0fa9e'
+     * 'http://textures.minecraft.net/texture/1e0a82f6e5221c6de51c4e463d915a5109e93b6b6d904bd9e72acc5cd1d0fa9e' <p>
+     *      *             the link is optional.
      * @param name the name of the item.
      * @param lore the lore of the item.
      * @return the ItemStack
@@ -54,7 +57,8 @@ public class ItemUtils {
     /**
      * Gets an item with the skull from a textures.minecraft link.
      * @param link the link. Has to have the format of <p>
-     * 'http://textures.minecraft.net/texture/1e0a82f6e5221c6de51c4e463d915a5109e93b6b6d904bd9e72acc5cd1d0fa9e'
+     * 'http://textures.minecraft.net/texture/1e0a82f6e5221c6de51c4e463d915a5109e93b6b6d904bd9e72acc5cd1d0fa9e' <p>
+     *      *             the link is optional.
      * @return the ItemStack
      */
     public static ItemStack getSkull(@NotNull String link) {

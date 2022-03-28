@@ -247,6 +247,16 @@ public class GUI extends IGUI {
         return this;
     }
 
+    /**
+     * Registers the current GUI, enabling the following methods:
+     * <p> - {@link IGUI#onClick(InventoryClickEvent)}
+     * <p> - {@link IGUI#onDrag(InventoryDragEvent)}
+     * @return if registered successfully.
+     */
+    public boolean registerGUI() {
+        return GUI.registerGUI(this);
+    }
+
     @Override
     public void onClick(InventoryClickEvent event) {
         HumanEntity entity = event.getWhoClicked();

@@ -89,6 +89,21 @@ public class JSONWrapper extends LinkedHashMap implements Map {
     /**
      * <strong>INTERNAL USE ONLY</strong>
      * <p>
+     * Gets a pair with the key of a map and the parsed map.
+     * @param line the line of map, including ones that are contained.
+     * @return
+     * @throws MalformedJsonException
+     */
+    private static Pair<String, Map> parseMap(String line) throws MalformedJsonException {
+        Map<String, Object> map = new HashMap<>();
+        String key = line.split(":\\{")[0];
+
+        return new Pair<>(key, map);
+    }
+
+    /**
+     * <strong>INTERNAL USE ONLY</strong>
+     * <p>
      * Writes a JSON string from an object.
      * @param value the object.
      * @return the finished JSON text.
@@ -178,6 +193,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
         boolean inMap = false;
         boolean ignoreNext = false;
 
+        int mapDepth = 0;
         int index = 0;
 
         StringBuilder currentLine = new StringBuilder();
@@ -192,8 +208,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
             if (first) {
                 first = false;
                 continue;
-            }
-            index++;
+            } index++;
 
             if (ignoreNext) {
                 ignoreNext = false;
@@ -228,15 +243,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
                         currentLine.setLength(0);
                     }
 
-                    else if (inMap) {
-                        Pair<String, Object> pair = JSONWrapper.matchLine(currentLine.toString());
-                        Object obj = mapWeb.get(currentKey);
-                        if (obj instanceof HashMap map) {
-                            map.put(pair.getFirst(), pair.getSecond());
-                            mapWeb.put(currentKey, map);
-                        } else mapWeb.put(currentKey, obj);
-                        currentLine.setLength(0);
-                    }
+                    else if (inMap) currentLine.append(ch);
 
                     else if (currentLine.length() > 0) {
                         Pair<String, Object> pair = JSONWrapper.matchLine(currentLine.toString());
@@ -268,23 +275,18 @@ public class JSONWrapper extends LinkedHashMap implements Map {
                     break;
 
                 case '{':
-
-                    if (!inMap) inMap = true;
-                    Matcher matcher1 = KEY_PATTERN.matcher(currentLine.toString());
-                    if (matcher1.matches()) {
-                        currentKey = matcher1.group(1);
-                        currentLine.setLength(0);
-                    }
-                    else throw new MalformedJsonException();
+                    if (inQuotes) currentLine.append(ch);
+                    else if (inMap) mapDepth++;
+                    else inMap = true;
                     break;
 
                 case '}':
                     if (inQuotes) currentLine.append(ch);
                     else if (!inMap) {
                         if (index + 1 != array.length) throw new MalformedJsonException();
-
-                        else if (currentLine.length() > 0) {
-                            Pair<String, Object> pair = JSONWrapper.matchLine(currentLine.toString());
+                        mapDepth--;
+                        if (mapDepth == 0) {
+                            Pair<String, Map> pair = JSONWrapper.parseMap(currentLine.toString());
                             this.put(pair.getFirst(), pair.getSecond());
                             currentLine.setLength(0);
                         }

@@ -25,7 +25,7 @@ public class BukkitImpl extends JavaPlugin {
 
     private static BukkitImpl instance;
     private final boolean dev = this.getDescription().getVersion().endsWith("-dev");
-    private String version = this.getDescription().getVersion();
+    private final String version = this.getDescription().getVersion();
     private static final String COMMAND_PREFIX = "§7§oRoku; §f";
 
     // DEV
@@ -33,7 +33,12 @@ public class BukkitImpl extends JavaPlugin {
     private final GUI TEST_GUI = new GUI("§eVoltage §7~ §cITZY", 27)
             .setShape(List.of("xxxxxxxxx", "xxxxAxxxx", "xxxxxxxxx"))
             .setShapeItem('x', ItemUtils.getBlank(new ItemStack(Material.BLACK_STAINED_GLASS_PANE)))
-            .setShapeItem('A', ItemUtils.getSkull("http://textures.minecraft.net/texture/3ec6c6e00a6ad055f250546a8c0da070df4613a5f65517a9933bd5de969d8406"));
+            .setShapeItem('A', ItemUtils.getSkull("3ec6c6e00a6ad055f250546a8c0da070df4613a5f65517a9933bd5de969d8406"))
+            .addClickEvent(event -> {
+                event.setCancelled(true);
+                HumanEntity entity = event.getWhoClicked();
+                entity.sendMessage(COMMAND_PREFIX + "§9Liquid Smooth §7~ §8Mitski");
+            }).setDragEvent(event -> event.setCancelled(true));
 
     @Override
     public void onEnable() {
@@ -41,11 +46,6 @@ public class BukkitImpl extends JavaPlugin {
         if (this.isDev()) {
             BukkitImpl.warning("Development build detected, if this is not intended, please report this on the github.");
             this.advancementTest();
-            TEST_GUI.addClickEvent(event -> {
-                        event.setCancelled(true);
-                        HumanEntity entity = event.getWhoClicked();
-                        entity.sendMessage(COMMAND_PREFIX + "§9Liquid Smooth §7~ §8Mitski");
-                    }).setDragEvent(event -> event.setCancelled(true));
             GUI.registerGUI(TEST_GUI);
             BukkitImpl.info("Test GUI has been created and registered.");
         }
