@@ -18,19 +18,22 @@ public class JSONWrapper extends LinkedHashMap implements Map {
      * @param map the map to convert.
      * @return the converted text.
      */
-    public static String toString(Map map) {
-        StringBuilder builder = new StringBuilder("{");
+    public static String toString(Map map, boolean pretty) {
+        StringBuilder builder = new StringBuilder("{" + (pretty ? "\n" : ""));
         for (Object o : map.entrySet()) {
             Entry entry = (Entry) o;
             builder.append("\"")
                     .append(entry.getKey())
                     .append("\"")
                     .append(":")
-                    .append(JSONWrapper.writeJson(entry.getValue()))
-                    .append(",");
+                    .append(JSONWrapper.writeJson(entry.getValue(), pretty))
+                    .append(",")
+                    .append(pretty ? "\n" : "");
         }
-        builder.setLength(builder.length() - 1);
-        return builder.append("}")
+        builder.setLength(builder.length() - (pretty ? 2 : 1));
+        return builder
+                .append(pretty ? "\n" : "")
+                .append("}")
                 .toString();
     }
 
@@ -43,6 +46,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
      * @throws MalformedJsonException if the line does not match the regex.
      */
     private static Pair<String, Object> matchLine(String line) throws MalformedJsonException {
+        if (line.endsWith("}")) line = StringUtils.replaceLast(line, "}", "");
         Matcher matcher = KEY_VALUE_PATTERN.matcher(line);
         if (matcher.matches()) {
             String key = matcher.group(1);
@@ -60,6 +64,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
      * @throws MalformedJsonException if there's an error in the value.
      */
     private static Object parseValue(String value) throws MalformedJsonException {
+        if (value.endsWith("}")) value = StringUtils.replaceLast(value, "}", "");
         if (value.startsWith("\"")) {
             if (!value.endsWith("\"")) throw new MalformedJsonException();
             value = value.replaceFirst("\"", "");
@@ -94,11 +99,133 @@ public class JSONWrapper extends LinkedHashMap implements Map {
      * @return
      * @throws MalformedJsonException
      */
-    private static Pair<String, Map> parseMap(String line) throws MalformedJsonException {
-        Map<String, Object> map = new HashMap<>();
-        String key = line.split(":\\{")[0];
+    private static Pair<String, Map> parseMap(String line, boolean whole) throws MalformedJsonException {
+        Map<String, Object> currentMap = new HashMap<>();
+        String key = null;
+        if (!whole) key = line.split(":\\{")[0];
+        boolean first = true;
+        boolean inQuotes = false;
+        boolean inArray = false;
+        boolean inMap = false;
+        boolean ignoreNext = false;
 
-        return new Pair<>(key, map);
+        int mapDepth = 0;
+        int index = 0;
+
+        StringBuilder currentLine = new StringBuilder();
+        String currentKey = "";
+        List<Object> currentList = new ArrayList<>();
+
+        char[] array = line.toCharArray();
+
+        for (char ch : array) {
+            if (first) {
+                first = false;
+                continue;
+            } index++;
+
+            if (ignoreNext) {
+                ignoreNext = false;
+                continue;
+            }
+
+            switch (ch) {
+
+                case '"':
+                    if (inQuotes && !StringUtils.isEscaped(index, array)) {
+                        currentLine.append(ch);
+                        inQuotes = false;
+                    } else if (!inQuotes) {
+                        inQuotes = true;
+                        currentLine
+                                .append(ch);
+                    } else currentLine.append(ch);
+                    break;
+
+                case ':':
+                    if (!inQuotes && inArray) throw new MalformedJsonException();
+                    currentLine.append(ch);
+                    break;
+
+                case ',':
+                    if (inQuotes) currentLine.append(ch);
+                        // Earliest , can be is at "{\"\"," (index 3)
+                    else if (index < 3) throw new MalformedJsonException();
+
+                    else if (inArray) {
+                        currentList.add(StringUtils.removeQuotes(currentLine.toString()));
+                        currentLine.setLength(0);
+                    }
+
+                    else if (inMap) currentLine.append(ch);
+
+                    else if (currentLine.length() > 0) {
+                        Pair<String, Object> pair = JSONWrapper.matchLine(currentLine.toString());
+                        currentMap.put(pair.getFirst(), pair.getSecond());
+                        currentLine.setLength(0);
+                    } //else throw new MalformedJsonException();
+                    break;
+
+                case '[':
+                    if (!inQuotes && inArray) throw new MalformedJsonException();
+                    inArray = true;
+                    Matcher matcher = KEY_PATTERN.matcher(currentLine.toString());
+                    if (matcher.matches()) currentKey = matcher.group(1);
+                    else throw new MalformedJsonException();
+                    currentLine.setLength(0);
+                    break;
+
+                case ']':
+                    if (!inQuotes && !inArray) throw new MalformedJsonException();
+                    if (!inQuotes) {
+                        currentList.add(StringUtils.removeQuotes(currentLine.toString()));
+                        currentMap.put(currentKey, currentList);
+                        inArray = false;
+                        currentList = new ArrayList<>();
+                        currentKey = "";
+                        currentLine.setLength(0);
+                        ignoreNext = true;
+                    } else currentLine.append(ch);
+                    break;
+
+                case '{':
+                    currentLine.append(ch);
+                    if (!inQuotes) {
+                        inMap = true;
+                        mapDepth++;
+                    }
+                    break;
+
+                case '}':
+                    currentLine.append(ch);
+                    if (inMap) {
+                        mapDepth--;
+                        if (mapDepth == 0) {
+                            String k = StringUtils.removeQuotes(currentLine.toString().split(":\\{")[0]);
+                            String l = currentLine.toString().replaceFirst("\"" + k + "\":", "");
+                            Pair<String, Map> pair = JSONWrapper.parseMap(l, false);
+                            currentMap.put(k, pair.getSecond());
+                            currentLine.setLength(0);
+                            inMap = false;
+                        } else if (mapDepth < 0) throw new MalformedJsonException();
+
+                    } else if (!inQuotes && currentLine.length() != 1) {
+                        if (index + 1 != array.length) throw new MalformedJsonException();
+                        Pair<String, Object> pair = JSONWrapper.matchLine(currentLine.toString());
+                        currentMap.put(pair.getFirst(), pair.getSecond());
+                        currentLine.setLength(0);
+                    }
+                    break;
+
+                case ' ':
+                    if (inQuotes) currentLine.append(" ");
+                    break;
+
+                default:
+                    currentLine.append(ch);
+            }
+        }
+        return new Pair<>(key, currentMap);
     }
 
     /**
@@ -108,15 +235,15 @@ public class JSONWrapper extends LinkedHashMap implements Map {
      * @param value the object.
      * @return the finished JSON text.
      */
-    private static String writeJson(Object value) {
+    private static String writeJson(Object value, boolean pretty) {
         StringBuilder builder = new StringBuilder();
         if (value instanceof Number number) {
             if (number instanceof Double d && d.isInfinite() && d.isNaN()) builder.append("null");
             else if (number instanceof Float f && f.isInfinite() && f.isNaN()) builder.append("null");
             else builder.append(number);
         } else if (value instanceof Boolean bool) builder.append(bool);
-        else if (value instanceof List list) builder.append(JSONWrapper.writeJson(list));
-        else if (value instanceof Map map) builder.append(JSONWrapper.writeJson(map));
+        else if (value instanceof List list) builder.append(JSONWrapper.writeJson(list, pretty));
+        else if (value instanceof Map map) builder.append(JSONWrapper.writeJson(map, pretty));
         else builder.append("\"")
                     .append(StringUtils.escape(value))
                     .append("\"");
@@ -130,11 +257,13 @@ public class JSONWrapper extends LinkedHashMap implements Map {
      * @param list the list.
      * @return the finished JSON text.
      */
-    private static String writeJson(List list) {
-        StringBuilder builder = new StringBuilder("[");
-        for (Object value : list) builder.append(JSONWrapper.writeJson(value)).append(",");
-        builder.setLength(builder.length() - 1);
-        return builder.append("]").toString();
+    private static String writeJson(List list, boolean pretty) {
+        StringBuilder builder = new StringBuilder("[" + (pretty ? "\n" : ""));
+        for (Object value : list) builder.append(JSONWrapper.writeJson(value, pretty)).append(",").append(pretty ? "\n" :"");
+        builder.setLength(builder.length() - (pretty ? 2 : 1));
+        return builder.append(pretty ? "\n" : "")
+                .append("]")
+                .toString();
     }
 
     /**
@@ -144,19 +273,21 @@ public class JSONWrapper extends LinkedHashMap implements Map {
      * @param map the map.
      * @return the finished JSON text.
      */
-    private static String writeJson(Map map) {
-        StringBuilder builder = new StringBuilder("{");
+    private static String writeJson(Map map, boolean pretty) {
+        StringBuilder builder = new StringBuilder("{" + (pretty ? "\n" : ""));
         for (Object o : map.entrySet()) {
             Entry entry = (Entry) o;
             builder.append("\"")
                     .append(entry.getKey())
                     .append("\"")
                     .append(":");
-            builder.append(JSONWrapper.writeJson(entry.getValue()))
-                    .append(",");
+            builder.append(JSONWrapper.writeJson(entry.getValue(), pretty))
+                    .append(",")
+                    .append(pretty ? "\n" : "");
         }
-        builder.setLength(builder.length() - 1);
+        builder.setLength(builder.length() - (pretty ? 2 : 1));
         return builder
+                .append(pretty ? "\n" : "")
                 .append("}")
                 .toString();
     }
@@ -186,132 +317,8 @@ public class JSONWrapper extends LinkedHashMap implements Map {
      */
     public JSONWrapper(String json) throws MalformedJsonException {
         if (!json.startsWith("{") && !json.endsWith("}")) throw new MalformedJsonException();
-
-        boolean first = true;
-        boolean inQuotes = false;
-        boolean inArray = false;
-        boolean inMap = false;
-        boolean ignoreNext = false;
-
-        int mapDepth = 0;
-        int index = 0;
-
-        StringBuilder currentLine = new StringBuilder();
-        String currentKey = "";
-        List<Object> currentList = new ArrayList<>();
-        Map<String, Object> mapWeb = new HashMap<>();
-        Map<String, Object> currentMap = new HashMap<>();
-
-        char[] array = json.toCharArray();
-
-        for (char ch : array) {
-            if (first) {
-                first = false;
-                continue;
-            } index++;
-
-            if (ignoreNext) {
-                ignoreNext = false;
-                continue;
-            }
-
-            switch (ch) {
-
-                case '"':
-                    if (inQuotes && !StringUtils.isEscaped(index, array)) {
-                        currentLine.append(ch);
-                        inQuotes = false;
-                    } else if (!inQuotes) {
-                        inQuotes = true;
-                        currentLine
-                            .append(ch);
-                    } else currentLine.append(ch);
-                    break;
-
-                case ':':
-                    if (!inQuotes && inArray) throw new MalformedJsonException();
-                    currentLine.append(ch);
-                    break;
-
-                case ',':
-                    if (inQuotes) currentLine.append(ch);
-                    // Earliest , can be is at "{\"\"," (index 3)
-                    else if (index < 3) throw new MalformedJsonException();
-
-                    else if (inArray) {
-                        currentList.add(StringUtils.removeQuotes(currentLine.toString()));
-                        currentLine.setLength(0);
-                    }
-
-                    else if (inMap) currentLine.append(ch);
-
-                    else if (currentLine.length() > 0) {
-                        Pair<String, Object> pair = JSONWrapper.matchLine(currentLine.toString());
-                        this.put(pair.getFirst(), pair.getSecond());
-                        currentLine.setLength(0);
-                    } else throw new MalformedJsonException();
-                    break;
-
-                case '[':
-                    if (!inQuotes && inArray) throw new MalformedJsonException();
-                    inArray = true;
-                    Matcher matcher = KEY_PATTERN.matcher(currentLine.toString());
-                    if (matcher.matches()) currentKey = matcher.group(1);
-                    else throw new MalformedJsonException();
-                    currentLine.setLength(0);
-                    break;
-
-                case ']':
-                    if (!inQuotes && !inArray) throw new MalformedJsonException();
-                    if (!inQuotes) {
-                        currentList.add(StringUtils.removeQuotes(currentLine.toString()));
-                        this.put(currentKey, currentList);
-                        inArray = false;
-                        currentList = new ArrayList<>();
-                        currentKey = "";
-                        currentLine.setLength(0);
-                        ignoreNext = true;
-                    } else currentLine.append(ch);
-                    break;
-
-                case '{':
-                    if (inQuotes) currentLine.append(ch);
-                    else if (inMap) mapDepth++;
-                    else inMap = true;
-                    break;
-
-                case '}':
-                    if (inQuotes) currentLine.append(ch);
-                    else if (!inMap) {
-                        if (index + 1 != array.length) throw new MalformedJsonException();
-                        mapDepth--;
-                        if (mapDepth == 0) {
-                            Pair<String, Map> pair = JSONWrapper.parseMap(currentLine.toString());
-                            this.put(pair.getFirst(), pair.getSecond());
-                            currentLine.setLength(0);
-                        }
-
-                    } else {
-                        Pair<String, Object> pair = JSONWrapper.matchLine(currentLine.toString());
-                        Object obj = mapWeb.get(currentKey);
-                        if (obj instanceof HashMap map) {
-                            map.put(pair.getFirst(), pair.getSecond());
-                            mapWeb.put(currentKey, map);
-                        } else {
-                            Map<String, Object> map = new HashMap<>();
-                            map.put(pair.getFirst(), pair.getSecond());
-                            mapWeb.put(currentKey, map);
-                        }
-                        currentLine.setLength(0);
-                        this.putAll(mapWeb);
-                        inMap = false;
-                    }
-                    break;
-
-                default:
-                    currentLine.append(ch);
-            }
-        }
+        Pair<String, Map> pair = JSONWrapper.parseMap(json, true);
+        this.putAll(pair.getSecond());
     }
 
     /**
@@ -320,6 +327,14 @@ public class JSONWrapper extends LinkedHashMap implements Map {
      */
     @Override
     public String toString() {
-        return JSONWrapper.toString(this);
+        return JSONWrapper.toString(this, false);
+    }
+
+    /**
+     * Converts the current JSONWrapper to a pretty JSON text.
+     * @return the pretty JSON text.
+     */
+    public String toPrettyString() {
+        return JSONWrapper.toString(this, true);
     }
 }
