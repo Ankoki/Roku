@@ -1,6 +1,5 @@
 # ROKU  
 
- ---
 Roku is a library to help with bukkit, web requests, JSON and more.  
 > ## **IMPORTANT NOTE**  
 > This library is still in early development. Most features I plan to add are either unfinished, slightly broken, or not even started yet.  
@@ -8,7 +7,6 @@ Roku is a library to help with bukkit, web requests, JSON and more.
 
 ## Importing and Shading.
 
----
 Whilst this project is in development, you can still import and shade it into your project by utilising Jitpack.  
 To import this using maven, you can use the following.
 ```xml
@@ -40,7 +38,6 @@ dependencies {
 ```
 ## Examples  
 
- ---  
 Here you can find examples for most features within Roku.
 
 ### GUIs  
