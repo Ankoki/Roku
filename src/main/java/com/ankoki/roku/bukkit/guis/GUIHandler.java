@@ -10,14 +10,14 @@ public class GUIHandler implements Listener {
     @EventHandler
     private void onClick(InventoryClickEvent event) {
         for (IGUI gui : GUI.getRegistry()) {
-            gui.onClick(event);
+            if (event.getInventory() == gui.getInventory()) gui.onClick(event);
         }
     }
 
     @EventHandler
     private void onDrag(InventoryDragEvent event) {
         for (IGUI gui : GUI.getRegistry()) {
-            gui.onDrag(event);
+            if (event.getInventory() == gui.getInventory()) gui.onDrag(event);
         }
     }
 }

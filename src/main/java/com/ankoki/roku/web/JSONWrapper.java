@@ -18,23 +18,8 @@ public class JSONWrapper extends LinkedHashMap implements Map {
      * @param map the map to convert.
      * @return the converted text.
      */
-    public static String toString(Map map, boolean pretty) {
-        StringBuilder builder = new StringBuilder("{" + (pretty ? "\n" : ""));
-        for (Object o : map.entrySet()) {
-            Entry entry = (Entry) o;
-            builder.append("\"")
-                    .append(entry.getKey())
-                    .append("\"")
-                    .append(":")
-                    .append(JSONWrapper.writeJson(entry.getValue(), pretty))
-                    .append(",")
-                    .append(pretty ? "\n" : "");
-        }
-        builder.setLength(builder.length() - (pretty ? 2 : 1));
-        return builder
-                .append(pretty ? "\n" : "")
-                .append("}")
-                .toString();
+    public static String toString(Map map, boolean pretty, int indentation) {
+        return new JSONParser(map, pretty, indentation).toString();
     }
 
     /**
@@ -229,70 +214,6 @@ public class JSONWrapper extends LinkedHashMap implements Map {
     }
 
     /**
-     * <strong>INTERNAL USE ONLY</strong>
-     * <p>
-     * Writes a JSON string from an object.
-     * @param value the object.
-     * @return the finished JSON text.
-     */
-    private static String writeJson(Object value, boolean pretty) {
-        StringBuilder builder = new StringBuilder();
-        if (value instanceof Number number) {
-            if (number instanceof Double d && d.isInfinite() && d.isNaN()) builder.append("null");
-            else if (number instanceof Float f && f.isInfinite() && f.isNaN()) builder.append("null");
-            else builder.append(number);
-        } else if (value instanceof Boolean bool) builder.append(bool);
-        else if (value instanceof List list) builder.append(JSONWrapper.writeJson(list, pretty));
-        else if (value instanceof Map map) builder.append(JSONWrapper.writeJson(map, pretty));
-        else builder.append("\"")
-                    .append(StringUtils.escape(value))
-                    .append("\"");
-        return builder.toString();
-    }
-
-    /**
-     * <strong>INTERNAL USE ONLY</strong>
-     * <p>
-     * Writes a JSON string from a list.
-     * @param list the list.
-     * @return the finished JSON text.
-     */
-    private static String writeJson(List list, boolean pretty) {
-        StringBuilder builder = new StringBuilder("[" + (pretty ? "\n" : ""));
-        for (Object value : list) builder.append(JSONWrapper.writeJson(value, pretty)).append(",").append(pretty ? "\n" :"");
-        builder.setLength(builder.length() - (pretty ? 2 : 1));
-        return builder.append(pretty ? "\n" : "")
-                .append("]")
-                .toString();
-    }
-
-    /**
-     * <strong>INTERNAL USE ONLY</strong>
-     * <p>
-     * Writes a JSON string from a map.
-     * @param map the map.
-     * @return the finished JSON text.
-     */
-    private static String writeJson(Map map, boolean pretty) {
-        StringBuilder builder = new StringBuilder("{" + (pretty ? "\n" : ""));
-        for (Object o : map.entrySet()) {
-            Entry entry = (Entry) o;
-            builder.append("\"")
-                    .append(entry.getKey())
-                    .append("\"")
-                    .append(":");
-            builder.append(JSONWrapper.writeJson(entry.getValue(), pretty))
-                    .append(",")
-                    .append(pretty ? "\n" : "");
-        }
-        builder.setLength(builder.length() - (pretty ? 2 : 1));
-        return builder
-                .append(pretty ? "\n" : "")
-                .append("}")
-                .toString();
-    }
-
-    /**
      * Creates a new JSONWrapper object.
      */
     public JSONWrapper() {
@@ -327,7 +248,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
      */
     @Override
     public String toString() {
-        return JSONWrapper.toString(this, false);
+        return JSONWrapper.toString(this, false, 0);
     }
 
     /**
@@ -335,6 +256,120 @@ public class JSONWrapper extends LinkedHashMap implements Map {
      * @return the pretty JSON text.
      */
     public String toPrettyString() {
-        return JSONWrapper.toString(this, true);
+        return JSONWrapper.toString(this, true, 1);
+    }
+
+    /**
+     * Converts the current JSONWrapper to a pretty JSON text.
+     * @return the pretty JSON text.
+     */
+    public String toPrettyString(int indentation) {
+        return JSONWrapper.toString(this, true, indentation);
+    }
+
+    private static class JSONParser {
+
+        private final String string;
+        private int currentIndentation;
+        private final int indentationAmount;
+
+        public JSONParser(Map wrapper, boolean pretty, int indentation) {
+            indentationAmount = indentation;
+            StringBuilder builder = new StringBuilder("{" + (pretty ? "\n" + " ".repeat(indentation) : ""));
+            currentIndentation = indentation;
+
+            for (Object o : wrapper.entrySet()) {
+                Entry entry = (Entry) o;
+                builder.append(pretty ? " ".repeat(currentIndentation) : "")
+                        .append("\"")
+                        .append(entry.getKey())
+                        .append("\"")
+                        .append(":")
+                        .append(this.writeJson(entry.getValue(), pretty))
+                        .append(",")
+                        .append(pretty ? "\n" : "")
+                        .append(pretty ? " ".repeat(currentIndentation) : "");
+            }
+            int clone = currentIndentation;
+            builder.setLength(builder.length() - (pretty ? clone + 2 : 1));
+            string = builder
+                    .append(pretty ? "\n" : "")
+                    .append("}")
+                    .toString();
+        }
+
+        /**
+         * <strong>INTERNAL USE ONLY</strong>
+         * <p>
+         * Writes a JSON string from an object.
+         * @param value the object.
+         * @return the finished JSON text.
+         */
+        private String writeJson(Object value, boolean pretty) {
+            StringBuilder builder = new StringBuilder();
+            if (value instanceof Number number) {
+                if (number instanceof Double d && d.isInfinite() && d.isNaN()) builder.append("null");
+                else if (number instanceof Float f && f.isInfinite() && f.isNaN()) builder.append("null");
+                else builder.append(number);
+            } else if (value instanceof Boolean bool) builder.append(bool);
+            else if (value instanceof List list) builder.append(this.writeJson(list, pretty));
+            else if (value instanceof Map map) builder.append(this.writeJson(map, pretty));
+            else builder.append("\"")
+                        .append(StringUtils.escape(value))
+                        .append("\"");
+            return builder.toString();
+        }
+
+        /**
+         * <strong>INTERNAL USE ONLY</strong>
+         * <p>
+         * Writes a JSON string from a list.
+         * @param list the list.
+         * @return the finished JSON text.
+         */
+        private String writeJson(List list, boolean pretty) {
+            StringBuilder builder = new StringBuilder("[");
+            currentIndentation = currentIndentation + indentationAmount;
+            for (Object value : list) builder.append(pretty ? "\n" + " ".repeat(currentIndentation) : "")
+                    .append(this.writeJson(value, pretty))
+                    .append(",");
+            builder.setLength(builder.length() - 1);
+            currentIndentation = currentIndentation - indentationAmount;
+            return builder.append(pretty ? "\n" + " ".repeat(currentIndentation) : "")
+                    .append("]")
+                    .toString();
+        }
+
+        /**
+         * <strong>INTERNAL USE ONLY</strong>
+         * <p>
+         * Writes a JSON string from a map.
+         * @param map the map.
+         * @return the finished JSON text.
+         */
+        private String writeJson(Map map, boolean pretty) {
+            currentIndentation = currentIndentation + indentationAmount;
+            StringBuilder builder = new StringBuilder("{" + (pretty ? "\n" + " ".repeat(currentIndentation) : ""));
+            for (Object o : map.entrySet()) {
+                Entry entry = (Entry) o;
+                builder.append(pretty ? " ".repeat(currentIndentation) : "")
+                        .append("\"")
+                        .append(entry.getKey())
+                        .append("\"")
+                        .append(":");
+                builder.append(this.writeJson(entry.getValue(), pretty))
+                        .append(",")
+                        .append(pretty ? "\n" + " ".repeat(currentIndentation) : "");
+            }
+            int clone = currentIndentation;
+            builder.setLength(builder.length() - (pretty ? clone + 2 : 1));
+            currentIndentation = currentIndentation - indentationAmount;
+            builder.append(pretty ? "\n" + " ".repeat(currentIndentation) + "}" : "}");
+            return builder.toString();
+        }
+
+        public String toString() {
+            return string;
+        }
     }
 }
