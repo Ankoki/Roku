@@ -146,19 +146,19 @@ public class GUI extends IGUI {
      *              <code>myGui.setShapeItem('A', new ItemStack(Material.RED_WOOL);</code> would do the job.
      * @return current GUI for chaining.
      */
-    public GUI setShape(@NotNull List<String> shape) {
+    public GUI setShape(String... shape) {
         int rows = inventory.getSize() / 9;
-        if (rows != shape.size())
+        if (rows != shape.length)
             throw new IllegalArgumentException("The shape needs to have the same amount of strings as rows.");
         for (String row : shape)
             if (row.length() != 9) throw new IllegalArgumentException("Each row must only have 9 characters in, representing each slot.");
-        this.shape = shape;
+        this.shape = Arrays.asList(shape);
         return this;
     }
 
     /**
-     * Sets the character to the given item in the shape. Must call {@link GUI#setShape(List)} first.
-     * @param character the character to set. See {@link GUI#setShape(List)} for more information.
+     * Sets the character to the given item in the shape. Must call {@link GUI#setShape(String...)} first.
+     * @param character the character to set. See {@link GUI#setShape(String...)} for more information.
      * @param stack the item to set it to.
      * @return current GUI for chaining.
      */
