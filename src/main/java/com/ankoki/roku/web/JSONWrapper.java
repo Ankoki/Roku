@@ -283,7 +283,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
                 builder.append("\"")
                         .append(entry.getKey())
                         .append("\"")
-                        .append(":")
+                        .append(": ")
                         .append(this.writeJson(entry.getValue(), pretty))
                         .append(",")
                         .append(pretty ? "\n" : "")
@@ -354,7 +354,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
                 builder.append("\"")
                         .append(entry.getKey())
                         .append("\"")
-                        .append(":");
+                        .append(": ");
                 builder.append(this.writeJson(entry.getValue(), pretty))
                         .append(",")
                         .append(pretty ? "\n" + " ".repeat(currentIndentation) : "");
