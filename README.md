@@ -60,7 +60,8 @@ GUI gui = new GUI("§eVoltage §7~ §cITZY", 27)
         }).setDragEvent(event -> event.setCancelled(true));
 GUI.registerGUI(gui);
 ```
-The GUI then looked like this: PHOTO INSERT LATER PLS.  
+The GUI then looked like this: <img width="966" alt="image" src="https://user-images.githubusercontent.com/72931234/161297243-bb5d1835-e6d3-4aa2-b918-ec04ed75be9a.png">
+  
 
 #### IGUI.java  
 Making your own implementation of an IGUI is easy; simply implement the provided [IGUI](https://github.com/Ankoki/Roku/blob/master/src/main/java/com/ankoki/roku/bukkit/guis/IGUI.java) interface and override the required methods!  
