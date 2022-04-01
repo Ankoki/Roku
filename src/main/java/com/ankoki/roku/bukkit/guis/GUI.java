@@ -137,7 +137,7 @@ public class GUI extends IGUI {
      * @param shape the shape. This list should be the amount of rows this GUI has. <p>
      *              Each string should be 9 characters long. <p>
      *              Each character represents an item; imagine I had a gui of 3 rows. <p>
-     *              I call <code>myGui.setShape(List.of("xxxxxxxxx", "xxxxAxxxx", "xxxxxxxxx");</code> <p>
+     *              I call <code>myGui.setShape("xxxxxxxxx", "xxxxAxxxx", "xxxxxxxxx");</code> <p>
      *              The shape is now set, now we can use the {@link GUI#setShapeItem(char, ItemStack)} method. <p>
      *              Firstly, I want to set all occurrences of 'x' to black stained-glass panes. <p>
      *              To do this, I will call <code>myGui.setShapeItem('x', new ItemStack(Material.BLACK_STAINED_GLASS_PANE);</code> <p>
@@ -162,7 +162,7 @@ public class GUI extends IGUI {
      * @param stack the item to set it to.
      * @return current GUI for chaining.
      */
-    public GUI setShapeItem(@NotNull char character, ItemStack stack) {
+    public GUI setShapeItem(char character, @NotNull ItemStack stack) {
         if (this.shape == null) throw new IllegalStateException("You need to set the shape before setting the items.");
         int slot = 0;
         for (String row : shape) {

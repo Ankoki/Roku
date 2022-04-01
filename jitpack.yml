@@ -1,5 +1,6 @@
 # This is only until I put this project on a proper repo manager.
 # I shall do that as soon as I deem this project has enough features and is not buggy.
 before_install:
+  - find ./ -name "*.lock" -type f -delete
   - sdk install java 17.0.1-tem
   - sdk use java 17.0.1-tem
