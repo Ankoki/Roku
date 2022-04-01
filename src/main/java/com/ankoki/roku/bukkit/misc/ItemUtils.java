@@ -109,12 +109,23 @@ public class ItemUtils {
     }
 
     /**
-     *
+     * Gets an item without a name, useful for easy filler items in GUIs.
+     * @param stack the ItemStack to make blank.
+     * @return the blank item.
      */
     public static ItemStack getBlank(@NotNull ItemStack stack) {
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName("§f");
         stack.setItemMeta(meta);
         return stack;
+    }
+
+    /**
+     * Gets an item without a name, useful for easy filler items in GUIs.
+     * @param material the material to make blank.
+     * @return the blank item.
+     */
+    public static ItemStack getBlank(@NotNull Material material) {
+        return ItemUtils.getBlank(new ItemStack(material));
     }
 }

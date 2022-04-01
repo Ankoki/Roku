@@ -19,7 +19,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
      * @return the converted text.
      */
     public static String toString(Map map, boolean pretty, int indentation) {
-        return new JSONParser(map, pretty, indentation).toString();
+        return new StringifyJSON(map, pretty, indentation).toString();
     }
 
     /**
@@ -256,7 +256,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
      * @return the pretty JSON text.
      */
     public String toPrettyString() {
-        return JSONWrapper.toString(this, true, 1);
+        return JSONWrapper.toString(this, true, 2);
     }
 
     /**
@@ -267,21 +267,20 @@ public class JSONWrapper extends LinkedHashMap implements Map {
         return JSONWrapper.toString(this, true, indentation);
     }
 
-    private static class JSONParser {
+    private static class StringifyJSON {
 
         private final String string;
         private int currentIndentation;
         private final int indentationAmount;
 
-        public JSONParser(Map wrapper, boolean pretty, int indentation) {
+        public StringifyJSON(Map wrapper, boolean pretty, int indentation) {
             indentationAmount = indentation;
             StringBuilder builder = new StringBuilder("{" + (pretty ? "\n" + " ".repeat(indentation) : ""));
             currentIndentation = indentation;
 
             for (Object o : wrapper.entrySet()) {
                 Entry entry = (Entry) o;
-                builder.append(pretty ? " ".repeat(currentIndentation) : "")
-                        .append("\"")
+                builder.append("\"")
                         .append(entry.getKey())
                         .append("\"")
                         .append(":")
@@ -352,8 +351,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
             StringBuilder builder = new StringBuilder("{" + (pretty ? "\n" + " ".repeat(currentIndentation) : ""));
             for (Object o : map.entrySet()) {
                 Entry entry = (Entry) o;
-                builder.append(pretty ? " ".repeat(currentIndentation) : "")
-                        .append("\"")
+                builder.append("\"")
                         .append(entry.getKey())
                         .append("\"")
                         .append(":");

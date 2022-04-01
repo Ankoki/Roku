@@ -115,7 +115,25 @@ map.put("map thingy", map1);
 JSONWrapper json = new JSONWrapper(map);
 System.out.println(json);
 ```
-The text that is outputted is `"{"map thingy":{"one":true,"wow a number":12},"boom":["list value one","list value two"],"hello":"test"}"`! You can also use `JSONWrapper#toPrettyString()` or `JSONWrapper.toString(JSONWrapper, boolean)` to add new lines and indentation (**WIP**)!  
+The text that is outputted is `"{"map thingy":{"one":true,"wow a number":12},"boom":["list value one","list value two"],"hello":"test"}"`! You can also use `JSONWrapper#toPrettyString()` or `JSONWrapper.toString(JSONWrapper, boolean)` to add new lines and indentation.  
+An example of a `JSONWrapper#toPrettyString()` output would be: 
+```json
+{
+  "test again":"lololol",
+  "test-map":{
+    "internal":{
+      "x":"o o os"
+    },
+    "one":"two"
+  },
+  "second-test-value":true,
+  "test key":[
+    "value 1",
+    "value 2",
+    "ur fuckin mudder"
+  ]
+}
+```
 You can also convert a JSON string to a JSONWrapper!
 ```java
 String unparsed = "{\"test key\":[\"value 1\",\"value 2\",\"woo im a list\"],\"test again\":\"lololol\",\"test-map\":{\"one\":\"two\"}}";
