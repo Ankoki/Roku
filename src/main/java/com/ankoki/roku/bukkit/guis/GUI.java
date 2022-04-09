@@ -72,14 +72,15 @@ public class GUI extends IGUI {
     private List<String> shape;
     private boolean canClickOwn = false;
 
-    private final Map<Integer, ClickEvent> clickEvents = new ConcurrentHashMap<>();
+    private Map<Integer, ClickEvent> clickEvents = new ConcurrentHashMap<>();
     private DragEvent dragEvent = null;
 
     /**
      * Creates a new GUI inventory.
+     *
      * @param holder the owner.
-     * @param name the title.
-     * @param size the size. Must be a multiple of 9, between 9 and 54.
+     * @param name   the title.
+     * @param size   the size. Must be a multiple of 9, between 9 and 54.
      */
     public GUI(InventoryHolder holder, String name, int size) {
         this.validateSize(size);
@@ -89,6 +90,7 @@ public class GUI extends IGUI {
 
     /**
      * Creates a new GUI inventory.
+     *
      * @param name the title.
      * @param size the size. Must be a multiple of 9, between 9 and 54.
      */
@@ -98,6 +100,7 @@ public class GUI extends IGUI {
 
     /**
      * Creates a new GUI inventory.
+     *
      * @param size the size. Must be a multiple of 9, between 9 and 54.
      */
     public GUI(int size) {
@@ -106,9 +109,10 @@ public class GUI extends IGUI {
 
     /**
      * Creates a new GUI inventory.
+     *
      * @param holder the owner.
-     * @param name the title.
-     * @param type the type.
+     * @param name   the title.
+     * @param type   the type.
      */
     public GUI(InventoryHolder holder, String name, InventoryType type) {
         name = name == null ? "§f" : name;
@@ -117,6 +121,7 @@ public class GUI extends IGUI {
 
     /**
      * Creates a new GUI inventory.
+     *
      * @param name the title.
      * @param type the type.
      */
@@ -126,14 +131,24 @@ public class GUI extends IGUI {
 
     /**
      * Creates a new GUI inventory.
+     *
      * @param type the type.
      */
     public GUI(InventoryType type) {
         this(null, null, type);
     }
 
+    public GUI(GUI gui) {
+        this.inventory = gui.getInventory();
+        this.shape = gui.shape;
+        this.canClickOwn = gui.canClickOwn;
+        this.clickEvents = gui.clickEvents;
+        this.dragEvent = gui.dragEvent;
+    }
+
     /**
      * Sets the shape of a gui.
+     *
      * @param shape the shape. This list should be the amount of rows this GUI has. <p>
      *              Each string should be 9 characters long. <p>
      *              Each character represents an item; imagine I had a gui of 3 rows. <p>
@@ -151,15 +166,17 @@ public class GUI extends IGUI {
         if (rows != shape.length)
             throw new IllegalArgumentException("The shape needs to have the same amount of strings as rows.");
         for (String row : shape)
-            if (row.length() != 9) throw new IllegalArgumentException("Each row must only have 9 characters in, representing each slot.");
+            if (row.length() != 9)
+                throw new IllegalArgumentException("Each row must only have 9 characters in, representing each slot.");
         this.shape = Arrays.asList(shape);
         return this;
     }
 
     /**
      * Sets the character to the given item in the shape. Must call {@link GUI#setShape(String...)} first.
+     *
      * @param character the character to set. See {@link GUI#setShape(String...)} for more information.
-     * @param stack the item to set it to.
+     * @param stack     the item to set it to.
      * @return current GUI for chaining.
      */
     public GUI setShapeItem(char character, @NotNull ItemStack stack) {
@@ -228,6 +245,7 @@ public class GUI extends IGUI {
 
     /**
      * Sets a slot in the GUI.
+     *
      * @param slot the slot to change.
      * @param item the item to change it to.
      * @return current GUI for changing.
@@ -239,6 +257,7 @@ public class GUI extends IGUI {
 
     /**
      * Adds items to the next available space in the GUI.
+     *
      * @param items the items to add.
      * @return current GUI for chaining.
      */
@@ -251,6 +270,7 @@ public class GUI extends IGUI {
      * Registers the current GUI, enabling the following methods:
      * <p> - {@link IGUI#onClick(InventoryClickEvent)}
      * <p> - {@link IGUI#onDrag(InventoryDragEvent)}
+     *
      * @return if registered successfully.
      */
     public boolean registerGUI() {

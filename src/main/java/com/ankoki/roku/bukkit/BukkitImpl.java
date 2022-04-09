@@ -7,6 +7,7 @@ import com.ankoki.roku.bukkit.advancements.Frame;
 import com.ankoki.roku.bukkit.advancements.exceptions.InvalidAdvancementException;
 import com.ankoki.roku.bukkit.guis.GUI;
 import com.ankoki.roku.bukkit.guis.GUIHandler;
+import com.ankoki.roku.bukkit.guis.PaginatedGUI;
 import com.ankoki.roku.bukkit.misc.ItemUtils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -15,6 +16,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,6 +40,12 @@ public class BukkitImpl extends JavaPlugin {
                 HumanEntity entity = event.getWhoClicked();
                 entity.sendMessage(COMMAND_PREFIX + "§9Liquid Smooth §7~ §8Mitski");
             }).setDragEvent(event -> event.setCancelled(true));
+    private final PaginatedGUI TEST_PAGINATED_GUI = new PaginatedGUI(TEST_GUI.setSlot(2, PaginatedGUI.makeButton("next", ItemUtils.getBlank(Material.ACACIA_SAPLING))))
+            .registerPage("next", 1, new GUI("Second page!!!!!!", 9)
+                    .setShape("----a----")
+                    .setShapeItem('-', ItemUtils.getBlank(Material.BLACK_BED))
+                    .addClickEvent(event -> event.setCancelled(true))
+                    .setDragEvent(event -> event.setCancelled(true)));
 
     @Override
     public void onEnable() {
@@ -111,6 +119,7 @@ public class BukkitImpl extends JavaPlugin {
                 else if (args[0].equalsIgnoreCase("advrevoke"))
                     Advancement.revokeAdvancement(player, Advancement.getAdvancement(ADVANCEMENT_KEY));
                 else if (args[0].equalsIgnoreCase("gui")) TEST_GUI.openTo(player);
+                else if (args[0].equalsIgnoreCase("paginatedgui")) TEST_PAGINATED_GUI.openTo(player);
                 sender.sendMessage(COMMAND_PREFIX + "done something with the arg " + args[0]);
             }
         } else sender.sendMessage(COMMAND_PREFIX + "Thank you for using Roku v" + version);
