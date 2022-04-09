@@ -16,11 +16,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 public class BukkitImpl extends JavaPlugin {
 
@@ -54,6 +51,7 @@ public class BukkitImpl extends JavaPlugin {
             BukkitImpl.warning("Development build detected, if this is not intended, please report this on the github.");
             this.advancementTest();
             GUI.registerGUI(TEST_GUI);
+            GUI.registerGUI(TEST_PAGINATED_GUI);
             BukkitImpl.info("Test GUI has been created and registered.");
         }
         this.getServer().getPluginManager().registerEvents(new GUIHandler(), this);
