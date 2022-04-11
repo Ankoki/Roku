@@ -33,6 +33,7 @@ public class Timespan {
             return null;
         }
         return switch (span) {
+            case "MILLISECOND", "MILLISECONDS", "MILLI", "MILLIS" -> new Timespan(amount);
             case "TICK", "TICKS" -> new Timespan((amount * 1000) * 20);
             case "SECONDS", "SECOND" -> new Timespan(amount * 1000);
             case "MINUTE", "MINUTES" -> new Timespan(amount * 60000);
@@ -47,7 +48,7 @@ public class Timespan {
      * @return the ticks.
      */
     public double getTicks() {
-        return (milliseconds / 20F) / 1000F;
+        return (milliseconds / 20D) / 1000D;
     }
 
     /**
@@ -57,16 +58,17 @@ public class Timespan {
      */
     public double getAs(Unit unit) {
         return switch (unit) {
+            case MILLISECONDS -> milliseconds;
             case TICKS -> this.getTicks();
-            case SECONDS -> milliseconds / 1000F;
-            case MINUTES -> milliseconds / 60000F;
-            case HOURS -> milliseconds / 3600000F;
-            case DAYS -> milliseconds / 85400000F;
+            case SECONDS -> milliseconds / 1000D;
+            case MINUTES -> milliseconds / 60000D;
+            case HOURS -> milliseconds / 3600000D;
+            case DAYS -> milliseconds / 85400000D;
         };
     }
 
     public enum Unit {
-        TICKS, SECONDS, MINUTES, HOURS, DAYS;
+        MILLISECONDS, TICKS, SECONDS, MINUTES, HOURS, DAYS;
 
         @Override
         public String toString() {

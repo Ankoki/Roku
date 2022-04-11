@@ -194,7 +194,7 @@ public class PaginatedGUI extends GUI {
      */
     public boolean openPage(@NotNull ItemStack item, HumanEntity... entities) {
         ItemMeta meta = item.getItemMeta();
-        if (meta.getPersistentDataContainer().has(BUTTON_KEY)) {
+        if (meta.getPersistentDataContainer().get(BUTTON_KEY, PersistentDataType.STRING) != null) {
             String page = meta.getPersistentDataContainer().get(BUTTON_KEY, PersistentDataType.STRING);
             this.openPage(page, entities);
             return true;

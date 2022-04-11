@@ -37,12 +37,7 @@ public class BukkitImpl extends JavaPlugin {
                 HumanEntity entity = event.getWhoClicked();
                 entity.sendMessage(COMMAND_PREFIX + "§9Liquid Smooth §7~ §8Mitski");
             }).setDragEvent(event -> event.setCancelled(true));
-    private final PaginatedGUI TEST_PAGINATED_GUI = new PaginatedGUI(TEST_GUI.setSlot(2, PaginatedGUI.makeButton("next", ItemUtils.getBlank(Material.ACACIA_SAPLING))))
-            .registerPage("next", 1, new GUI("Second page!!!!!!", 9)
-                    .setShape("----a----")
-                    .setShapeItem('-', ItemUtils.getBlank(Material.BLACK_BED))
-                    .addClickEvent(event -> event.setCancelled(true))
-                    .setDragEvent(event -> event.setCancelled(true)));
+    private PaginatedGUI TEST_PAGINATED_GUI = null;
 
     @Override
     public void onEnable() {
@@ -51,6 +46,12 @@ public class BukkitImpl extends JavaPlugin {
             BukkitImpl.warning("Development build detected, if this is not intended, please report this on the github.");
             this.advancementTest();
             GUI.registerGUI(TEST_GUI);
+            TEST_PAGINATED_GUI = new PaginatedGUI(TEST_GUI.setSlot(2, PaginatedGUI.makeButton("next", ItemUtils.getBlank(Material.BONE))))
+                    .registerPage("next", 1, new GUI("Second page!!!!!!", 9)
+                            .setShape("----a----")
+                            .setShapeItem('-', ItemUtils.getBlank(Material.BLACK_BED))
+                            .addClickEvent(event -> event.setCancelled(true))
+                            .setDragEvent(event -> event.setCancelled(true)));
             GUI.registerGUI(TEST_PAGINATED_GUI);
             BukkitImpl.info("Test GUI has been created and registered.");
         }

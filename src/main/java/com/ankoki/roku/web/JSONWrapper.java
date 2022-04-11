@@ -4,6 +4,9 @@ import com.ankoki.roku.misc.Pair;
 import com.ankoki.roku.misc.StringUtils;
 import com.ankoki.roku.web.exceptions.MalformedJsonException;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -228,6 +231,14 @@ public class JSONWrapper extends LinkedHashMap implements Map {
         super(map);
     }
 
+    /**
+     * Converts a file that contains ONLY JSON content to a JSONWrapper.
+     * @param file the file to read from.
+     * @throws IOException if any exception is thrown.
+     */
+    public JSONWrapper(File file) throws IOException, MalformedJsonException {
+        this(String.join("", Files.readAllLines(file.toPath())));
+    }
 
     /**
      * Converts a JSON text into a JSONWrapper object.
@@ -273,7 +284,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
         private int currentIndentation;
         private final int indentationAmount;
 
-        public StringifyJSON(Map wrapper, boolean pretty, int indentation) {
+        public StringifyJSON(Map<?, ?> wrapper, boolean pretty, int indentation) {
             indentationAmount = indentation;
             StringBuilder builder = new StringBuilder("{" + (pretty ? "\n" + " ".repeat(indentation) : ""));
             currentIndentation = indentation;
@@ -326,7 +337,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
          * @param list the list.
          * @return the finished JSON text.
          */
-        private String writeJson(List list, boolean pretty) {
+        private String writeJson(List<?> list, boolean pretty) {
             StringBuilder builder = new StringBuilder("[");
             currentIndentation = currentIndentation + indentationAmount;
             for (Object value : list) builder.append(pretty ? "\n" + " ".repeat(currentIndentation) : "")
@@ -346,7 +357,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
          * @param map the map.
          * @return the finished JSON text.
          */
-        private String writeJson(Map map, boolean pretty) {
+        private String writeJson(Map<?, ?> map, boolean pretty) {
             currentIndentation = currentIndentation + indentationAmount;
             StringBuilder builder = new StringBuilder("{" + (pretty ? "\n" + " ".repeat(currentIndentation) : ""));
             for (Object o : map.entrySet()) {
