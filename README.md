@@ -120,19 +120,15 @@ The text that is outputted is `"{"map thingy":{"one":true,"wow a number":12},"bo
 An example of a `JSONWrapper#toPrettyString()` output would be: 
 ```json
 {
-  "test again": "lololol",
-  "test-map": {
-    "internal": {
-      "x": "o o os"
-    },
-    "one": "two"
+  "map thingy": {
+    "one": true,
+    "wow a number": 12
   },
-  "second-test-value": true,
-  "test key": [
-    "value 1",
-    "value 2",
-    "ur fuckin mudder"
-  ]
+  "boom": [
+    "list value one",
+    "list value two"
+  ],
+  "hello": "test"
 }
 ```
 You can also convert a JSON string to a JSONWrapper!
