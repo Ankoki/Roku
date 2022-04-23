@@ -19,6 +19,15 @@ test {
     useJUnitPlatform()
 }
 
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
 jar {
     ant.replace(file : 'src/main/resources/plugin.yml', token: '@VERSION@', value: this.version)
     archiveName 'Roku.jar'
