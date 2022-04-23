@@ -1,7 +1,4 @@
-plugins {
-    id 'java'
-}
-
+apply plugin: 'java'
 apply plugin: 'maven-publish'
 
 group 'com.ankoki'
@@ -20,6 +17,10 @@ test {
     useJUnitPlatform()
 }
 
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
 
 publishing {
     publications {
