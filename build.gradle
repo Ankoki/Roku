@@ -3,7 +3,6 @@ apply plugin: 'maven-publish'
 
 group 'com.ankoki'
 version '1.0-dev'
-targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
