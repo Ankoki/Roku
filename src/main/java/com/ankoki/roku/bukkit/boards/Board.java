@@ -47,7 +47,7 @@ public class Board {
     public static boolean unregister(Board board) {
         for (Map.Entry<Player, Board> entry : REGISTERED_BOARDS.entrySet()) {
             if (entry.getValue() == board) {
-                board.show(false);
+                board.setVisibility(false);
                 REGISTERED_BOARDS.remove(entry.getKey());
                 return true;
             }
@@ -137,10 +137,10 @@ public class Board {
 
     /**
      * Shows or hides the board.
-     * @param show true if you want to show, otherwise false.
+     * @param visibility true if you want to show, otherwise false.
      */
-    public void show(boolean show) {
-        player.setScoreboard(show ? current : previous);
+    public void setVisibility(boolean visibility) {
+        player.setScoreboard(visibility ? current : previous);
     }
 
     /**
