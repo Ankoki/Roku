@@ -5,6 +5,7 @@ import com.ankoki.roku.bukkit.advancements.AdvancementTrigger;
 import com.ankoki.roku.bukkit.advancements.Background;
 import com.ankoki.roku.bukkit.advancements.Frame;
 import com.ankoki.roku.bukkit.advancements.exceptions.InvalidAdvancementException;
+import com.ankoki.roku.bukkit.boards.Board;
 import com.ankoki.roku.bukkit.guis.GUI;
 import com.ankoki.roku.bukkit.guis.GUIHandler;
 import com.ankoki.roku.bukkit.guis.PaginatedGUI;
@@ -16,10 +17,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-public class BukkitImpl extends JavaPlugin {
+public class BukkitImpl extends JavaPlugin implements Listener {
 
     private static BukkitImpl instance;
     private final boolean dev = this.getDescription().getVersion().endsWith("-dev");
@@ -54,6 +58,7 @@ public class BukkitImpl extends JavaPlugin {
                             .setDragEvent(event -> event.setCancelled(true)));
             GUI.registerGUI(TEST_PAGINATED_GUI);
             BukkitImpl.info("Test GUI has been created and registered.");
+            this.getServer().getPluginManager().registerEvents(this ,this);
         }
         this.getServer().getPluginManager().registerEvents(new GUIHandler(), this);
         this.getServer().getPluginCommand("roku").setExecutor(this);
@@ -107,6 +112,15 @@ public class BukkitImpl extends JavaPlugin {
         } catch (InvalidAdvancementException ex) {
             ex.printStackTrace();
         }
+    }
+
+    @EventHandler
+    private void onJoin(PlayerJoinEvent event) {
+        Board board = Board.of(event.getPlayer());
+        board.setTitle("§7§lROKU §f• §a§oDEVELOPMENT");
+        board.setLine(1, "§c • Bottom •");
+        board.setLine(2, "§f");
+        board.setLine(3, "§e • Top •");
     }
 
     @Override

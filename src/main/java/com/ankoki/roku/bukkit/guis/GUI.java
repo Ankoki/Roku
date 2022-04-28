@@ -2,7 +2,7 @@ package com.ankoki.roku.bukkit.guis;
 
 import com.ankoki.roku.bukkit.guis.events.ClickEvent;
 import com.ankoki.roku.bukkit.guis.events.DragEvent;
-import com.ankoki.roku.misc.Utils;
+import com.ankoki.roku.misc.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -222,7 +222,7 @@ public class GUI extends IGUI {
      * @return current GUI for chaining.
      */
     public GUI addClickEvent(ClickEvent event, int... slots) {
-        if (slots.length == 0) slots = Utils.range(0, 54);
+        if (slots.length == 0) slots = NumberUtils.range(0, 54);
         for (int i : slots) clickEvents.put(i, event);
         return this;
     }
