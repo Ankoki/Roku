@@ -50,7 +50,11 @@ public class BukkitImpl extends JavaPlugin implements Listener {
             BukkitImpl.warning("Development build detected, if this is not intended, please report this on the github.");
             this.advancementTest();
             GUI.registerGUI(TEST_GUI);
-            TEST_PAGINATED_GUI = new PaginatedGUI(TEST_GUI.setSlot(2, PaginatedGUI.makeButton("next", ItemUtils.getBlank(Material.BONE))))
+            TEST_PAGINATED_GUI = new PaginatedGUI(new GUI("First page :)", 18)
+                    .setShape("---------", "aaaaaaaaa")
+                    .setShapeItem('-', ItemUtils.getBlank(Material.CHAIN))
+                    .setShapeItem('a', ItemUtils.getBlank(Material.COOKIE))
+                    .setSlot(2, PaginatedGUI.makeButton("next", ItemUtils.getBlank(Material.BONE))))
                     .registerPage("next", 1, new GUI("Second page!!!!!!", 9)
                             .setShape("----a----")
                             .setShapeItem('-', ItemUtils.getBlank(Material.BLACK_BED))
@@ -58,7 +62,7 @@ public class BukkitImpl extends JavaPlugin implements Listener {
                             .setDragEvent(event -> event.setCancelled(true)));
             GUI.registerGUI(TEST_PAGINATED_GUI);
             BukkitImpl.info("Test GUI has been created and registered.");
-            this.getServer().getPluginManager().registerEvents(this ,this);
+            this.getServer().getPluginManager().registerEvents(this, this);
         }
         this.getServer().getPluginManager().registerEvents(new GUIHandler(), this);
         this.getServer().getPluginCommand("roku").setExecutor(this);
@@ -127,12 +131,12 @@ public class BukkitImpl extends JavaPlugin implements Listener {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (this.isDev()) {
             if (sender instanceof Player player && args.length == 1) {
-                if (args[0].equalsIgnoreCase("advgive"))
-                    Advancement.awardAdvancement(player, Advancement.getAdvancement(ADVANCEMENT_KEY));
-                else if (args[0].equalsIgnoreCase("advrevoke"))
-                    Advancement.revokeAdvancement(player, Advancement.getAdvancement(ADVANCEMENT_KEY));
-                else if (args[0].equalsIgnoreCase("gui")) TEST_GUI.openTo(player);
-                else if (args[0].equalsIgnoreCase("paginatedgui")) TEST_PAGINATED_GUI.openTo(player);
+                switch (args[0].toUpperCase()) {
+                    case "ADVGIVE" -> Advancement.awardAdvancement(player, Advancement.getAdvancement(ADVANCEMENT_KEY));
+                    case "ADVREVOKE" -> Advancement.revokeAdvancement(player, Advancement.getAdvancement(ADVANCEMENT_KEY));
+                    case "GUI" -> TEST_GUI.openTo(player);
+                    case "PAGINATEDGUI" -> TEST_PAGINATED_GUI.openTo(player);
+                }
                 sender.sendMessage(COMMAND_PREFIX + "done something with the arg " + args[0]);
             }
         } else sender.sendMessage(COMMAND_PREFIX + "Thank you for using Roku v" + version);

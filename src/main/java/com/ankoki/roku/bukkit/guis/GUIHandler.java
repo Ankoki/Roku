@@ -16,8 +16,10 @@ public class GUIHandler implements Listener {
         for (IGUI gui : GUI.getRegistry()) {
             if (event.getInventory() == gui.getInventory()) {
                 if (gui instanceof PaginatedGUI paginated && current != null) {
-                    if (paginated.openPage(current, entity)) continue;
-                } gui.onClick(event);
+                    if (paginated.openPage(current, entity)) break;
+                }
+                gui.onClick(event);
+                break;
             }
         }
     }
