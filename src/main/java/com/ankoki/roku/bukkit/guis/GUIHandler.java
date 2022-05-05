@@ -17,9 +17,10 @@ public class GUIHandler implements Listener {
             if (event.getInventory() == gui.getInventory()) {
                 if (gui instanceof PaginatedGUI paginated && current != null) {
                     if (paginated.openPage(current, entity)) break;
+                } else {
+                    gui.onClick(event);
+                    break;
                 }
-                gui.onClick(event);
-                break;
             }
         }
     }
@@ -27,7 +28,10 @@ public class GUIHandler implements Listener {
     @EventHandler
     private void onDrag(InventoryDragEvent event) {
         for (IGUI gui : GUI.getRegistry()) {
-            if (event.getInventory() == gui.getInventory()) gui.onDrag(event);
+            if (event.getInventory() == gui.getInventory()) {
+                gui.onDrag(event);
+                break;
+            }
         }
     }
 }

@@ -23,6 +23,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * JavaPlugin class to deal with Bukkit implementation.
+ */
 public class BukkitImpl extends JavaPlugin implements Listener {
 
     private static BukkitImpl instance;

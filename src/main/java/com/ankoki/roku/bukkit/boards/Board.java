@@ -54,7 +54,7 @@ public class Board {
         } return false;
     }
 
-    private final Player player;
+    private final Player owner;
     private final Scoreboard previous, current;
     private final Objective board;
     private final List<Team> lines = new ArrayList<>();
@@ -66,10 +66,10 @@ public class Board {
      * @param player the owning player.
      */
     private Board(Player player, boolean show) {
-        this.player = player;
+        this.owner = player;
         previous = player.getScoreboard();
         current = Bukkit.getScoreboardManager().getNewScoreboard();
-        if (show) this.player.setScoreboard(current);
+        if (show) this.owner.setScoreboard(current);
         board = current.registerNewObjective("RokuBoard", "default", "RokuBoard");
         board.setDisplaySlot(DisplaySlot.SIDEBAR);
         board.setDisplayName("§7");
@@ -140,15 +140,15 @@ public class Board {
      * @param visibility true if you want to show, otherwise false.
      */
     public void setVisibility(boolean visibility) {
-        player.setScoreboard(visibility ? current : previous);
+        owner.setScoreboard(visibility ? current : previous);
     }
 
     /**
      * Toggles the board's visibility.
      */
     public void toggle() {
-        if (player.getScoreboard() == current) player.setScoreboard(previous);
-        else player.setScoreboard(current);
+        if (owner.getScoreboard() == current) owner.setScoreboard(previous);
+        else owner.setScoreboard(current);
     }
 
     /**
@@ -156,15 +156,15 @@ public class Board {
      * @return true if showing, otherwise false.
      */
     public boolean isShowing() {
-        return player.getScoreboard() == current;
+        return owner.getScoreboard() == current;
     }
 
     /**
      * Gets the owning player of this board.
      * @return the owner.
      */
-    public Player getPlayer() {
-        return player;
+    public Player getOwner() {
+        return owner;
     }
 
     /**
