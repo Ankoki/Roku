@@ -34,6 +34,12 @@ public class Board {
         return Board.of(player, true);
     }
 
+    /**
+     * Gets a board of the player, and whether to show by default.
+     * @param player the player to get the board of.
+     * @param show whether to show it if it doesn't exist.
+     * @return player's board.
+     */
     public static Board of(Player player, boolean show) {
         if (REGISTERED_BOARDS.containsKey(player)) return REGISTERED_BOARDS.get(player);
         else return new Board(player, show);

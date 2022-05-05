@@ -77,26 +77,50 @@ public class BukkitImpl extends JavaPlugin implements Listener {
         instance = null;
     }
 
+    /**
+     * Sends an info level message to the console.
+     * @param log the text.
+     */
     public static void info(String log) {
         instance.getLogger().info(log);
     }
 
+    /**
+     * Sends a warning level message to the console.
+     * @param warning the text.
+     */
     public static void warning(String warning) {
         instance.getLogger().warning(warning);
     }
 
+    /**
+     * Sends an error level message to the console.
+     * @param error the text.
+     */
     public static void error(String error) {
         instance.getLogger().severe(error);
     }
 
+    /**
+     * Gets the BukkitImpl instance.
+     * @return the instance.
+     */
     public static BukkitImpl getInstance() {
         return instance;
     }
 
+    /**
+     * Gets the unsafe values of the bukkit server.
+     * @return the unsafe.
+     */
     public static UnsafeValues getUnsafe() {
         return instance.getServer().getUnsafe();
     }
 
+    /**
+     * Whether Roku is on a development version.
+     * @return true if Roku version ends with -dev.
+     */
     public boolean isDev() {
         return dev;
     }

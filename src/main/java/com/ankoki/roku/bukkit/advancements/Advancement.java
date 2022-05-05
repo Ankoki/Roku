@@ -77,6 +77,7 @@ public class Advancement {
      * Revokes a given criteria under an achievement.
      * @param player the player to revoke.
      * @param advancement the advancement.
+     * @param criteria the criteria to follow.
      * @return true if the given criteria was revoked.
      */
     public static boolean revokeAdvancement(@NotNull Player player, @NotNull Advancement advancement, @NotNull String criteria) {
@@ -87,6 +88,7 @@ public class Advancement {
      * Revokes a given criteria under an achievement.
      * @param player the player to revoke.
      * @param advancement the advancement.
+     * @param criteria the criteria to remove.
      * @return true if the given criteria was revoked.
      */
     public static boolean revokeAdvancement(@NotNull Player player, @NotNull org.bukkit.advancement.Advancement advancement, @NotNull String criteria) {
@@ -207,6 +209,7 @@ public class Advancement {
 
     /**
      * Creates an empty advancement with a key.
+     * @param key the key to use.
      */
     public Advancement(NamespacedKey key) {
         this.key = key;

@@ -19,6 +19,8 @@ public class JSONWrapper extends LinkedHashMap implements Map {
     /**
      * Converts a given Map to a JSON String.
      * @param map the map to convert.
+     * @param pretty if the text should be 'pretty'.
+     * @param indentation indentation.
      * @return the converted text.
      */
     public static String toString(Map map, boolean pretty, int indentation) {
@@ -234,6 +236,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
     /**
      * Converts a file that contains ONLY JSON content to a JSONWrapper.
      * @param file the file to read from.
+     * @throws MalformedJsonException if the JSON is malformed.
      * @throws IOException if any exception is thrown.
      */
     public JSONWrapper(File file) throws IOException, MalformedJsonException {
@@ -272,6 +275,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
 
     /**
      * Converts the current JSONWrapper to a pretty JSON text.
+     * @param indentation the indentation to have.
      * @return the pretty JSON text.
      */
     public String toPrettyString(int indentation) {
