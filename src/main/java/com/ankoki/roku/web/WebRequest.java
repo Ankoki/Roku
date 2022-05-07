@@ -156,6 +156,7 @@ public class WebRequest {
             builder.append(URLEncoder.encode(entry.getSecond(), StandardCharsets.UTF_8));
             builder.append("&");
         }
+        builder.setLength(builder.length() - 1);
         return builder.toString();
     }
 
