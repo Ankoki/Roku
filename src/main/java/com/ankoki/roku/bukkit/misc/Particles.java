@@ -1,13 +1,17 @@
 package com.ankoki.roku.bukkit.misc;
 
-import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Particles {
+    private static final double _2PI = Math.PI + Math.PI;
 
     /**
      * Draws a line of particles between two points with the given space, particle and dust options.
@@ -21,7 +25,7 @@ public class Particles {
                                 @NotNull Location pointTwo,
                                 double space,
                                 @NotNull Particle particle,
-                                Particle.DustOptions options) {
+                                @Nullable Particle.DustOptions options) {
         World world = pointOne.getWorld();
         if (pointTwo.getWorld() == world) throw new IllegalArgumentException("Points cannot be in different worlds.");
         double distance = pointOne.distance(pointTwo);
@@ -36,49 +40,96 @@ public class Particles {
     }
 
     /**
-     * Draws a line with the specified particle.
-     * @param pointOne the starting point.
-     * @param pointTwo the finishing point.
-     * @param space the space between each particle.
+     * Draws a circle along the X/Z axis using the given parameters.
+     * @param center the center of the circle.
+     * @param points the amount of particles to be used.
+     * @param radius the radius of the circle.
      * @param particle the particle to spawn.
-     * @param colour if the particle is redstone, will be the colour.
-     * @param size if the particle is redstone, will be the size.
+     * @param options the dust options to apply to the particle.
      */
-    public static void drawLine(@NotNull Location pointOne,
-                                 @NotNull Location pointTwo,
-                                 double space,
+    public static void drawHorizontalCircle(@NotNull Location center,
+                                            double points,
+                                            double radius,
+                                            @NotNull Particle particle,
+                                            @Nullable Particle.DustOptions options) {
+        World world = center.getWorld();
+        double increment = _2PI / points;
+        List<Location> locations = new ArrayList<>();
+        for (int i = 0; i < points; i++) {
+            double angle = i * increment;
+            double x = center.getX() + (radius * Math.cos(angle));
+            double z = center.getZ() + (radius * Math.sin(angle));
+            locations.add(new Location(world, x, center.getY(), z));
+        }
+        for (Location location : locations) {
+            if (options == null) world.spawnParticle(particle, location, 1);
+            else world.spawnParticle(particle, location, 1, options);
+        }
+    }
+
+    /**
+     * Draws a circle along the Y axis using the given parameters.
+     * @param center the center of the circle.
+     * @param points the amount of particles to be used.
+     * @param radius the radius of the circle.
+     * @param particle the particle to spawn.
+     * @param options the dust options to apply to the particle.
+     */
+    public static void drawVerticalCircle(@NotNull Location center,
+                                          double points,
+                                          double radius,
+                                          @NotNull Particle particle,
+                                          @Nullable Particle.DustOptions options) {
+        World world = center.getWorld();
+        double increment = _2PI / points;
+        List<Location> locations = new ArrayList<>();
+        for (int i = 0; i < points; i++) {
+            double angle = i * increment;
+            double x = center.getX() + (radius * Math.cos(angle));
+            double y = center.getY() + (radius * Math.sin(angle));
+            locations.add(new Location(world, x, y, center.getZ()));
+        }
+        for (Location location : locations) {
+            if (options == null) world.spawnParticle(particle, location, 1);
+            else world.spawnParticle(particle, location, 1, options);
+        }
+    }
+
+    /**
+     * Draws a torus using the given parameters.
+     * @param center the center of the torus.
+     * @param majorRadius the radius of the major circle.
+     * @param minorRadius the radius of the minor circles.
+     * @param density the density of the torus.
+     * @param particle the particle to spawn.
+     * @param options the dust options to apply to the particle.
+     */
+    public static void drawTorus(@NotNull Location center,
+                                 double majorRadius,
+                                 double minorRadius,
+                                 double density,
                                  @NotNull Particle particle,
-                                 Color colour,
-                                 float size) {
-        if (particle == Particle.REDSTONE) Particles.drawLine(pointOne, pointTwo, space, particle, new Particle.DustOptions(colour, size));
-        else Particles.drawLine(pointOne, pointTwo, space, particle, null);
-    }
-
-    /**
-     * Draws a line of redstone dust in the specified colour.
-     * @param pointOne the starting point.
-     * @param pointTwo the finishing point.
-     * @param space the space between each particle.
-     * @param colour the color to spawn.
-     */
-    public static void drawLine(@NotNull Location pointOne,
-                                @NotNull Location pointTwo,
-                                double space,
-                                Color colour) {
-        Particles.drawLine(pointOne, pointTwo, space, Particle.REDSTONE, colour, 1);
-    }
-
-    /**
-     * Draws a line with the specified particle.
-     * @param pointOne the starting point.
-     * @param pointTwo the finishing point.
-     * @param space the space between each particle.
-     * @param particle the particle to spawn.
-     */
-    public static void drawLine(@NotNull Location pointOne,
-                                @NotNull Location pointTwo,
-                                double space,
-                                @NotNull Particle particle) {
-        Particles.drawLine(pointOne, pointTwo, space, particle, null, 1);
+                                 @Nullable Particle.DustOptions options) {
+        World world = center.getWorld();
+        double majorCircumference = _2PI * majorRadius * density;
+        double minorCircumference = _2PI * minorRadius * density;
+        List<Location> points = new ArrayList<>();
+        double deltaMajor = _2PI / majorCircumference;
+        double deltaMinor = _2PI / minorCircumference;
+        for (int i = 0; i < (int) minorCircumference; i++) {
+            double cosTheta = Math.cos(i * deltaMinor), sinTheta = Math.sin(i * deltaMinor);
+            for (int j = 0; j < (int) majorCircumference; j++) {
+                double x = (majorRadius + minorRadius * cosTheta) * Math.cos(j * deltaMajor);
+                double y = minorRadius * sinTheta;
+                double z = (majorRadius + minorRadius * cosTheta) * Math.sin(j * deltaMajor);
+                Location point = center.clone();
+                point.add(new Vector(x, y, z));
+                points.add(point);
+            }
+        }
+        for (Location location : points) {
+            if (options == null) world.spawnParticle(particle, location, 1);
+            else world.spawnParticle(particle, location, 1, options);
+        }
     }
 }
