@@ -10,6 +10,8 @@ import com.ankoki.roku.bukkit.guis.GUI;
 import com.ankoki.roku.bukkit.guis.GUIHandler;
 import com.ankoki.roku.bukkit.guis.PaginatedGUI;
 import com.ankoki.roku.bukkit.misc.ItemUtils;
+import com.ankoki.roku.misc.Version;
+import com.ankoki.roku.misc.ReflectionUtils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.UnsafeValues;
@@ -29,9 +31,10 @@ import org.jetbrains.annotations.NotNull;
 public class BukkitImpl extends JavaPlugin implements Listener {
 
     private static BukkitImpl instance;
-    private final boolean dev = this.getDescription().getVersion().endsWith("-dev");
-    private final String version = this.getDescription().getVersion();
+    private final String rokuVersion = this.getDescription().getVersion();
+    private final boolean dev = rokuVersion.endsWith("-dev");
     private static final String COMMAND_PREFIX = "§7§oRoku; §f";
+    private final Version serverVersion = Version.of(this.getServer().getBukkitVersion().split("-")[0]);
 
     // DEV
     private final NamespacedKey ADVANCEMENT_KEY = new NamespacedKey(this, "roku_test");
@@ -49,6 +52,8 @@ public class BukkitImpl extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         instance = this;
+        ReflectionUtils.setBukkitVersion(this.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3]);
+        ReflectionUtils.setNewNms(serverVersion.isNewerThan(1, 16));
         if (this.isDev()) {
             BukkitImpl.warning("Development build detected, if this is not intended, please report this on the github.");
             this.advancementTest();
@@ -125,6 +130,14 @@ public class BukkitImpl extends JavaPlugin implements Listener {
         return dev;
     }
 
+    /**
+     * Gets the current server version.
+     * @return the current server version.
+     */
+    public Version getServerVersion() {
+        return serverVersion;
+    }
+
     private void advancementTest() {
         try {
             // Advancements are persistent once registered, so only
@@ -166,7 +179,7 @@ public class BukkitImpl extends JavaPlugin implements Listener {
                 }
                 sender.sendMessage(COMMAND_PREFIX + "done something with the arg " + args[0]);
             }
-        } else sender.sendMessage(COMMAND_PREFIX + "Thank you for using Roku v" + version);
+        } else sender.sendMessage(COMMAND_PREFIX + "Thank you for using Roku v" + rokuVersion);
         return true;
     }
 }
