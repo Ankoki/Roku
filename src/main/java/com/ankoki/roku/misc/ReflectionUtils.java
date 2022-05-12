@@ -1,5 +1,7 @@
 package com.ankoki.roku.misc;
 
+import com.ankoki.roku.bukkit.BukkitImpl;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -15,16 +17,16 @@ public class ReflectionUtils {
     private static boolean MC_NEW_NMS = false;
 
     /**
-     * Sets the bukkit version. We recommend you use the following method to do this: <p>
-     * <code>Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3]</code>
+     * Sets the bukkit version. <p>
+     * Roku does this in {@link BukkitImpl#onEnable()} so this doesn't need to be done by the user.
      */
     public static void setBukkitVersion(String version) {
         MC_SERVER_VERSION = version;
     }
 
     /**
-     * Declares whether bukkit is using 1.17 or above. We recommend you use the following method to do this: <p>
-     *
+     * Declares whether bukkit is using 1.17 or above.
+     * Roku does this in {@link BukkitImpl#onEnable()} so this doesn't need to be done by the user.
      * @param bool true if bukkit is running 1.17 or above.
      */
     public static void setNewNms(boolean bool) {
@@ -32,7 +34,7 @@ public class ReflectionUtils {
     }
 
     /**
-     *  Gets a craft bukkit class by name.
+     * Gets a craft bukkit class by name.
      * {@link ReflectionUtils#setBukkitVersion(String)}
      *
      * @param className the class name.

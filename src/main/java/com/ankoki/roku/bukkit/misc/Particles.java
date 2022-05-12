@@ -27,7 +27,7 @@ public class Particles {
                                 @NotNull Particle particle,
                                 @Nullable Particle.DustOptions options) {
         World world = pointOne.getWorld();
-        if (pointTwo.getWorld() == world) throw new IllegalArgumentException("Points cannot be in different worlds.");
+        if (pointTwo.getWorld() != world) throw new IllegalArgumentException("Points cannot be in different worlds.");
         double distance = pointOne.distance(pointTwo);
         Vector vectorOne = pointOne.toVector();
         Vector vectorTwo = pointTwo.toVector();

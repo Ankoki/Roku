@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -36,6 +37,17 @@ public class WebRequest {
      */
     public WebRequest(URL url, RequestType type) {
         this.url = url;
+        this.type = type;
+    }
+
+    /**
+     * Creates a new web request.
+     * @param url the url to execute on.
+     * @param type the request type.
+     * @throws MalformedURLException if the string given is malformed.
+     */
+    public WebRequest(String url, RequestType type) throws MalformedURLException {
+        this.url = new URL(url);
         this.type = type;
     }
 
