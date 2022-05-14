@@ -48,7 +48,7 @@ public class Timespan {
      * @return the ticks.
      */
     public double getTicks() {
-        return (milliseconds / 20D) / 1000D;
+        return (milliseconds / 1000D) * 20D;
     }
 
     /**
