@@ -73,7 +73,6 @@ public class ReflectionUtils {
      * @param clazz the class to search.
      * @param name the name of the field.
      * @return the field's value.
-     * @throws ReflectiveOperationException if field does not exist.
      */
     public static Object getField(Class<?> clazz, String name) {
         try {
@@ -92,7 +91,6 @@ public class ReflectionUtils {
      * @param name the name of the field.
      * @param object the object to get the field from.
      * @return the field's value.
-     * @throws ReflectiveOperationException if field does not exist.
      */
     public static Object getField(Class<?> clazz, String name, Object object) {
         try {
@@ -110,7 +108,6 @@ public class ReflectionUtils {
      * @param clazz the class to search.
      * @param name the name of the field.
      * @param value the value to set it to.
-     * @throws ReflectiveOperationException if field does not exist.
      */
     public static void setField(Class<?> clazz, String name, Object value) {
         try {
@@ -128,7 +125,6 @@ public class ReflectionUtils {
      * @param name the name of the field.
      * @param object the object to set the field for.
      * @param value the value to set it to.
-     * @throws ReflectiveOperationException if field does not exist.
      */
     public static void setField(Class<?> clazz, String name, Object object, Object value) {
         try {
@@ -147,7 +143,6 @@ public class ReflectionUtils {
      * @param mappedMethod the name of the mapped method.
      * @param parameters the parameters of the method. Can be absent.
      * @return the method found.
-     * @throws ReflectiveOperationException if the method isn't found.
      */
     public static Method getNMSMethod(Class<?> clazz, String method, String mappedMethod, Class<?>... parameters) {
         try {
@@ -164,7 +159,6 @@ public class ReflectionUtils {
      * @param name the name of the method.
      * @param parameters the parameters of the method. Can be absent.
      * @return the method found.
-     * @throws ReflectiveOperationException if the method isn't found.
      */
     public static Method getMethod(Class<?> clazz, String name, Class<?>... parameters) {
         try {
@@ -180,7 +174,6 @@ public class ReflectionUtils {
      * @param method the method to invoke the arguments on.
      * @param arguments the arguments to invoke.
      * @return the method's value.
-     * @throws ReflectiveOperationException if the method does not exist.
      */
     public static Object invokeMethod(Method method, Object... arguments) {
         try {
@@ -197,7 +190,6 @@ public class ReflectionUtils {
      * @param instance the instance to invoke it on.
      * @param arguments the arguments to invoke.
      * @return the method's value.
-     * @throws ReflectiveOperationException if the method does not exist.
      */
     public static Object invokeInstanceMethod(Method method, Object instance, Object... arguments) {
         try {
