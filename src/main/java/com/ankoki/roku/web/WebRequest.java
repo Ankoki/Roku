@@ -65,18 +65,22 @@ public class WebRequest {
      *
      * @param key   the key of the header.
      * @param value the value of the header.
+     * @return the current request, for chaining.
      */
-    public void addHeader(String key, String value) {
+    public WebRequest addHeader(String key, String value) {
         this.addHeader(new Pair<>(key, value));
+        return this;
     }
 
     /**
      * Adds a header to the current request.
      *
      * @param pair the pair containing the key first, and the value of the header second.
+     * @return the current request, for chaining.
      */
-    public void addHeader(Pair<String, String> pair) {
+    public WebRequest addHeader(Pair<String, String> pair) {
         this.headers.add(pair);
+        return this;
     }
 
     /**
@@ -84,44 +88,54 @@ public class WebRequest {
      *
      * @param key   the key of the parameter.
      * @param value the value of the parameter.
+     * @return the current request, for chaining.
      */
-    public void addParameter(String key, String value) {
+    public WebRequest addParameter(String key, String value) {
         this.addParameter(new Pair<>(key, value));
+        return this;
     }
 
     /**
      * Adds a parameter to the current request.
      *
      * @param pair the pair containing the key first, and the value of the parameter second.
+     * @return the current request, for chaining.
      */
-    public void addParameter(Pair<String, String> pair) {
+    public WebRequest addParameter(Pair<String, String> pair) {
         this.parameters.add(pair);
+        return this;
     }
 
     /**
      * Sets the connection timeout in milliseconds.
      * 0 represents an infinite time, with no timeout.
      * @param connectTimeout time to wait until timing out when connecting.
+     * @return the current request, for chaining.
      */
-    public void setConnectTimeout(int connectTimeout) {
+    public WebRequest setConnectTimeout(int connectTimeout) {
         this.connectTimeout = connectTimeout;
+        return this;
     }
 
     /**
      * Sets the read timeout in milliseconds.
      * 0 represents an infinite time, with no timeout.
      * @param readTimeout time to wait until timing out when reading.
+     * @return the current request, for chaining.
      */
-    public void setReadTimeout(int readTimeout) {
+    public WebRequest setReadTimeout(int readTimeout) {
         this.readTimeout = readTimeout;
+        return this;
     }
 
     /**
      * Allows redirects for this request.
      * @param allowRedirects if the request can redirect.
+     * @return the current request, for chaining.
      */
-    public void setAllowRedirects(boolean allowRedirects) {
+    public WebRequest setAllowRedirects(boolean allowRedirects) {
         this.allowRedirects = allowRedirects;
+        return this;
     }
 
     /**

@@ -124,6 +124,33 @@ public class Board {
     }
 
     /**
+     * Sets the scoreboard to the given list.
+     * Clears the unused lines.
+     * @param contents the contents to set the scoreboard to.
+     */
+    public void setLines(List<String> contents) {
+        if (contents.size() > 15) throw new IllegalArgumentException("You can only have 15 lines on a scoreboard!");
+        this.setLines(contents.toArray(new String[0]));
+    }
+
+    /**
+     * Sets the scoreboard to the given array.
+     * Clears the unused lines.
+     * @param contents the contents to set the scoreboard to.
+     */
+    public void setLines(String... contents) {
+        if (contents.length > 15) throw new IllegalArgumentException("You can only have 15 lines on a scoreboard!");
+        int ind = 15;
+        while (ind > contents.length) {
+            this.deleteLine(ind);
+            ind--;
+        }
+        for (int i = contents.length - 1; i > -1; i--) {
+            this.setLine(i, contents[i]);
+        }
+    }
+
+    /**
      * Deletes a line from the scoreboard.
      * @param line the line to delete.
      */
