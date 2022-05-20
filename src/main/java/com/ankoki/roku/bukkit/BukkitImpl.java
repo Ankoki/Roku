@@ -38,14 +38,14 @@ public class BukkitImpl extends JavaPlugin implements Listener {
 
     // DEV
     private final NamespacedKey ADVANCEMENT_KEY = new NamespacedKey(this, "roku_test");
-    private final GUI TEST_GUI = new GUI("§eVoltage §7~ §cITZY", 27)
+    private final GUI TEST_GUI = new GUI("§fROKU§8. .§1그에", 27)
             .setShape("xxxxxxxxx", "xxxxAxxxx", "xxxxxxxxx")
             .setShapeItem('x', ItemUtils.getBlank(Material.BLACK_STAINED_GLASS_PANE))
             .setShapeItem('A', ItemUtils.getSkull("3ec6c6e00a6ad055f250546a8c0da070df4613a5f65517a9933bd5de969d8406", "§f"))
             .addClickEvent(event -> {
                 event.setCancelled(true);
                 HumanEntity entity = event.getWhoClicked();
-                entity.sendMessage(COMMAND_PREFIX + "§9Liquid Smooth §7~ §8Mitski");
+                entity.sendMessage(COMMAND_PREFIX + "§cYou have clicked the 로쿠 test 그에");
             }).setDragEvent(event -> event.setCancelled(true));
     private PaginatedGUI TEST_PAGINATED_GUI = null;
 

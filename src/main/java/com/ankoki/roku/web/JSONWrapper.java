@@ -99,6 +99,10 @@ public class JSONWrapper extends LinkedHashMap implements Map {
         boolean inMap = false;
         boolean ignoreNext = false;
 
+        String clone = line;
+        if (!whole && clone.replace(key, "").equals("{}")) return new Pair<>(key, new HashMap<>());
+        else if (line.equals("{}")) return new Pair<>(key, new HashMap<>());
+
         int mapDepth = 0;
         int index = 0;
 
@@ -168,8 +172,11 @@ public class JSONWrapper extends LinkedHashMap implements Map {
                 case ']':
                     if (!inQuotes && !inArray) throw new MalformedJsonException();
                     if (!inQuotes) {
-                        currentList.add(StringUtils.removeQuotes(currentLine.toString()));
-                        currentMap.put(currentKey, currentList);
+                        if (currentLine.toString().equals("[]")) currentMap.put(currentKey, new ArrayList<>());
+                        else {
+                            currentList.add(StringUtils.removeQuotes(currentLine.toString()));
+                            currentMap.put(currentKey, currentList);
+                        }
                         inArray = false;
                         currentList = new ArrayList<>();
                         currentKey = "";
@@ -342,12 +349,13 @@ public class JSONWrapper extends LinkedHashMap implements Map {
          * @return the finished JSON text.
          */
         private String writeJson(List<?> list, boolean pretty) {
+            if (list.isEmpty()) return "[]";
             StringBuilder builder = new StringBuilder("[");
             currentIndentation = currentIndentation + indentationAmount;
             for (Object value : list) builder.append(pretty ? "\n" + " ".repeat(currentIndentation) : "")
                     .append(this.writeJson(value, pretty))
                     .append(",");
-            builder.setLength(builder.length() - 1);
+            builder.setLength(builder.length() > 1 ? builder.length() - 1 : builder.length());
             currentIndentation = currentIndentation - indentationAmount;
             return builder.append(pretty ? "\n" + " ".repeat(currentIndentation) : "")
                     .append("]")
@@ -362,6 +370,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
          * @return the finished JSON text.
          */
         private String writeJson(Map<?, ?> map, boolean pretty) {
+            if (map.isEmpty()) return "{}";
             currentIndentation = currentIndentation + indentationAmount;
             StringBuilder builder = new StringBuilder("{" + (pretty ? "\n" + " ".repeat(currentIndentation) : ""));
             for (Object o : map.entrySet()) {
@@ -375,7 +384,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
                         .append(pretty ? "\n" + " ".repeat(currentIndentation) : "");
             }
             int clone = currentIndentation;
-            builder.setLength(builder.length() - (pretty ? clone + 2 : 1));
+            builder.setLength(builder.length() > 1 ? builder.length() - (pretty ? clone + 2 : 1) : builder.length());
             currentIndentation = currentIndentation - indentationAmount;
             builder.append(pretty ? "\n" + " ".repeat(currentIndentation) + "}" : "}");
             return builder.toString();
