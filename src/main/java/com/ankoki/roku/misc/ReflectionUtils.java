@@ -13,29 +13,53 @@ import java.lang.reflect.Method;
  */
 public class ReflectionUtils {
 
+    // START OF BUKKIT
+
     private static String MC_SERVER_VERSION = "null";
     private static boolean MC_NEW_NMS = false;
+    private static Method getHandle;
+    private static Field playerConnection;
+    private static Method sendPacket;
 
     /**
-     * Sets the bukkit version. <p>
-     * Roku does this in {@link BukkitImpl#onEnable()} so this doesn't need to be done by the user.
+     * <strong>INTERNAL USE ONLY</strong>
+     * <p>
+     * Sets up the methods needed to use bukkit reflection.
+     * Roku calls this, so API users shouldn't use it.
+     * @param version the bukkit version.
+     * @param newNms whether the nms is 1.17 or above.
      */
-    public static void setBukkitVersion(String version) {
+    public static void bukkitSetup(String version, boolean newNms) {
         MC_SERVER_VERSION = version;
+        MC_NEW_NMS = newNms;
+        try {
+            getHandle = Class.forName(MC_SERVER_VERSION + ".entity.CraftPlayer")
+                    .getDeclaredMethod("getHandle");
+            playerConnection = getNMSClass("server.level", "EntityPlayer")
+                    .getDeclaredField(BukkitImpl.getInstance().getServerVersion().isNewerThan(1, 16, 5) ? "b" : "playerConnection");
+            sendPacket = getNMSClass("server.network", "PlayerConnection")
+                    .getMethod(Version.of("1.18").isNewerThan(BukkitImpl.getInstance().getServerVersion()) ? "sendPacket" : "a", getNMSClass("network.protocol", "Packet"));
+        } catch (ReflectiveOperationException ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**
-     * Declares whether bukkit is using 1.17 or above.
-     * Roku does this in {@link BukkitImpl#onEnable()} so this doesn't need to be done by the user.
-     * @param bool true if bukkit is running 1.17 or above.
+     * Sends packets to a player.
+      * @param player the player object.
+     * @param packets the packets to send.
      */
-    public static void setNewNms(boolean bool) {
-        MC_NEW_NMS = bool;
+    public static void sendPacket(Object player, Object... packets) {
+        try {
+            Object connection = playerConnection.get(getHandle.invoke(player));
+            for (Object packet : packets) sendPacket.invoke(connection, packet);
+        } catch (ReflectiveOperationException ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**
      * Gets a craft bukkit class by name.
-     * {@link ReflectionUtils#setBukkitVersion(String)}
      *
      * @param className the class name.
      * @return the craft bukkit class.
@@ -51,8 +75,6 @@ public class ReflectionUtils {
 
     /**
      * Gets the nms class depending on version.
-     * {@link ReflectionUtils#setBukkitVersion(String)}
-     * {@link ReflectionUtils#setNewNms(boolean)}
      *
      * @param nmsClass the nms class.
      * @param nmsPackage the nms package.
@@ -67,6 +89,8 @@ public class ReflectionUtils {
             return null;
         }
     }
+
+    // END OF BUKKIT
 
     /**
      * Gets a static field from a class.

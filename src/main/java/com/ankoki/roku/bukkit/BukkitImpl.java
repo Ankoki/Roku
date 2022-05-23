@@ -20,8 +20,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -52,8 +54,7 @@ public class BukkitImpl extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         instance = this;
-        ReflectionUtils.setBukkitVersion(this.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3]);
-        ReflectionUtils.setNewNms(serverVersion.isNewerThan(1, 16));
+        ReflectionUtils.bukkitSetup(this.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3], serverVersion.isNewerThan(1, 16));
         if (this.isDev()) {
             BukkitImpl.warning("Development build detected, if this is not intended, please report this on the github.");
             this.advancementTest();
@@ -79,6 +80,7 @@ public class BukkitImpl extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
+        HandlerList.unregisterAll((Plugin) this);
         instance = null;
     }
 
