@@ -113,11 +113,11 @@ map1.put("wow a number", 12L);
 map.put("hello", "test");
 map.put("boom", list);
 map.put("map thingy", map1);
-JSONWrapper json = new JSONWrapper(map);
+JSON json = new JSON(map);
 System.out.println(json);
 ```
-The text that is outputted is `"{"map thingy":{"one":true,"wow a number":12},"boom":["list value one","list value two"],"hello":"test"}"`! You can also use `JSONWrapper#toPrettyString()` or `JSONWrapper.toString(JSONWrapper, boolean)` to add new lines and indentation.  
-An example of a `JSONWrapper#toPrettyString()` output would be: 
+The text that is outputted is `"{"map thingy":{"one":true,"wow a number":12},"boom":["list value one","list value two"],"hello":"test"}"`! You can also use `JSON#toPrettyString()` or `JSON.toString(JSON, boolean)` to add new lines and indentation.  
+An example of a `JSON#toPrettyString()` output would be: 
 ```json
 {
   "map thingy": {
@@ -131,14 +131,14 @@ An example of a `JSONWrapper#toPrettyString()` output would be:
   "hello": "test"
 }
 ```
-You can also convert a JSON string to a JSONWrapper!
+You can also convert a JSON string to a JSON!
 ```java
 String unparsed = "{\"test key\":[\"value 1\",\"value 2\",\"woo im a list\"],\"test again\":\"lololol\",\"test-map\":{\"one\":\"two\"}}";
 try {
-    JSONWrapper json2 = new JSONWrapper(unparsed);
-    System.out.println(json2.get("test again"));;
-    System.out.println(String.join(", ", (List) json2.get("test key")));
-    System.out.println(((Map) json2.get("test-map")).get("one"));
+    JSON json = new JSON(unparsed);
+    System.out.println(json.get("test again"));;
+    System.out.println(String.join(", ", (List) json.get("test key")));
+    System.out.println(((Map) json.get("test-map")).get("one"));
 } catch (MalformedJsonException ex) {
     ex.printStackTrace();
 }

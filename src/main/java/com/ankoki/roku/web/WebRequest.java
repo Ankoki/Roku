@@ -29,6 +29,7 @@ public class WebRequest {
     private final RequestType type;
     private final URL url;
     private final List<Pair<String, String>> headers = new ArrayList<>(), parameters = new ArrayList<>();
+    private final List<JSON> data = new ArrayList<>();
 
     /**
      * Creates a new web request.
@@ -106,6 +107,11 @@ public class WebRequest {
         return this;
     }
 
+    public WebRequest addParameter(JSON json) {
+        this.data.add(json);
+        return this;
+    }
+
     /**
      * Sets the connection timeout in milliseconds.
      * 0 represents an infinite time, with no timeout.
@@ -144,19 +150,22 @@ public class WebRequest {
      */
     public Optional<String> execute() throws IOException {
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod(type.getMethod());
-        String parameters = this.getEncodedParameters();
-        if (parameters != null) {
-            con.setDoOutput(true);
-            DataOutputStream out = new DataOutputStream(con.getOutputStream());
-            out.writeBytes(parameters);
-            out.flush();
-            out.close();
-        }
+        if (type == RequestType.PATCH) {
+            con.setRequestProperty("X-HTTP-Method-Override", "PATCH");
+            con.setRequestMethod("POST");
+        } else con.setRequestMethod(type.getMethod());
         for (Pair<String, String> header : headers) con.setRequestProperty(header.getFirst(), header.getSecond());
         if (connectTimeout != -1) con.setConnectTimeout(connectTimeout);
         if (readTimeout != -1) con.setReadTimeout(readTimeout);
         con.setInstanceFollowRedirects(allowRedirects);
+        String parameters = this.getEncodedParameters();
+        if (parameters != null) {
+            con.setDoOutput(true);
+            DataOutputStream out = new DataOutputStream(con.getOutputStream());
+            out.write(parameters.getBytes(StandardCharsets.UTF_8));
+            out.flush();
+            out.close();
+        }
         BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         String line;
         StringBuilder content = new StringBuilder();
@@ -174,16 +183,24 @@ public class WebRequest {
      * @return the encoded parameters. Null if there are no parameters.
      */
     public String getEncodedParameters() {
-        if (parameters.size() < 1) return null;
-        StringBuilder builder = new StringBuilder();
-        for (Pair<String, String> entry : parameters) {
-            builder.append(URLEncoder.encode(entry.getFirst(), StandardCharsets.UTF_8));
-            builder.append("=");
-            builder.append(URLEncoder.encode(entry.getSecond(), StandardCharsets.UTF_8));
-            builder.append("&");
+        if (parameters.size() < 1 && data.size() < 1) return null;
+        boolean hasJson = data.size() >= 1;
+        JSON empty = new JSON();
+        for (JSON json : data) empty.putAll(json);
+        if (hasJson) {
+            for (Pair<String, String> entry : parameters) empty.put(entry.getFirst(), entry.getSecond());
+            return empty.toString();
+        } else {
+            StringBuilder builder = new StringBuilder();
+            for (Pair<String, String> entry : parameters) {
+                builder.append(URLEncoder.encode(entry.getFirst(), StandardCharsets.UTF_8));
+                builder.append("=");
+                builder.append(URLEncoder.encode(entry.getSecond(), StandardCharsets.UTF_8));
+                builder.append("&");
+            }
+            builder.setLength(builder.length() - 1);
+            return builder.toString();
         }
-        builder.setLength(builder.length() - 1);
-        return builder.toString();
     }
 
     /**
@@ -196,7 +213,8 @@ public class WebRequest {
         OPTIONS("OPTIONS"),
         PUT("PUT"),
         DELETE("DELETE"),
-        TRACE("TRACE");
+        TRACE("TRACE"),
+        PATCH("PATCH");
 
         final String method;
         RequestType(String method) {

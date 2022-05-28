@@ -2,7 +2,7 @@ package com.ankoki.roku.bukkit.advancements;
 
 import com.ankoki.roku.bukkit.BukkitImpl;
 import com.ankoki.roku.bukkit.advancements.exceptions.InvalidAdvancementException;
-import com.ankoki.roku.web.JSONWrapper;
+import com.ankoki.roku.web.JSON;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.advancement.AdvancementProgress;
@@ -23,7 +23,7 @@ import java.util.Map;
  */
 public class Advancement {
 
-    private final JSONWrapper json = new JSONWrapper();
+    private final JSON json = new JSON();
     private NamespacedKey key;
     private org.bukkit.advancement.Advancement advancement;
 
@@ -160,7 +160,7 @@ public class Advancement {
      * @param json json to validate.
      * @throws InvalidAdvancementException if there are any errors with the provided json.
      */
-    private static void validateJson(@NotNull JSONWrapper json) throws InvalidAdvancementException {
+    private static void validateJson(@NotNull JSON json) throws InvalidAdvancementException {
         if (json.containsKey("display")) {
             Object display = json.get("display");
             if (display instanceof Map<?,?> displayMap) {
@@ -190,7 +190,7 @@ public class Advancement {
     /**
      * <strong>INTERNAL USE ONLY</strong>
      * <p>
-     * See {@link Advancement#validateJson(JSONWrapper)}
+     * See {@link Advancement#validateJson(JSON)}
      * @param advancement the advancement object containing the json to validate.
      * @throws InvalidAdvancementException
      */
@@ -224,7 +224,7 @@ public class Advancement {
      * Gets the json object that contains advancement information.
      * @return the json.
      */
-    public JSONWrapper getJson() {
+    public JSON getJson() {
         return json;
     }
 

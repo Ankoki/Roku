@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class JSONWrapper extends LinkedHashMap implements Map {
+public class JSON extends LinkedHashMap<String, Object> implements Map<String, Object> {
 
     private static final Pattern KEY_PATTERN = Pattern.compile("\"(.+)?\":[ ]?");
     private static final Pattern KEY_VALUE_PATTERN = Pattern.compile("\"(.+)?\":[ ]?(.+)");
@@ -43,7 +43,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
         if (matcher.matches()) {
             String key = matcher.group(1);
             String value = matcher.group(2);
-            return new Pair<>(key, JSONWrapper.parseValue(value));
+            return new Pair<>(key, JSON.parseValue(value));
         }
         throw new MalformedJsonException("Malformed line: " + line);
     }
@@ -165,7 +165,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
                     } else if (inMap) currentLine.append(ch);
 
                     else if (currentLine.length() > 0) {
-                        Pair<String, Object> pair = JSONWrapper.matchLine(currentLine.toString());
+                        Pair<String, Object> pair = JSON.matchLine(currentLine.toString());
                         currentMap.put(pair.getFirst(), pair.getSecond());
                         currentLine.setLength(0);
                     } //else throw new MalformedJsonException();
@@ -217,13 +217,13 @@ public class JSONWrapper extends LinkedHashMap implements Map {
                             mapDepth--;
                             if (mapDepth == 0) {
                                 if (inArray) {
-                                    currentList.add(JSONWrapper.parseMap(currentLine.toString(), true));
+                                    currentList.add(JSON.parseMap(currentLine.toString(), true));
                                 }
                                 else {
                                     String temp = currentLine.toString().split(":\\{")[0];
                                     String k = StringUtils.removeQuotes(temp);
                                     String l = currentLine.toString().replaceFirst("\"" + k + "\":", "");
-                                    Pair<String, Map> pair = JSONWrapper.parseMap(l, false);
+                                    Pair<String, Map> pair = JSON.parseMap(l, false);
                                     currentMap.put(k, pair.getSecond());
                                 }
                                 currentLine.setLength(0);
@@ -232,7 +232,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
 
                         } else if (!inQuotes && currentLine.length() != 1) {
                             if (index + 1 != array.length) throw new MalformedJsonException();
-                            Pair<String, Object> pair = JSONWrapper.matchLine(currentLine.toString());
+                            Pair<String, Object> pair = JSON.matchLine(currentLine.toString());
                             currentMap.put(pair.getFirst(), pair.getSecond());
                             currentLine.setLength(0);
                         }
@@ -253,7 +253,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
     /**
      * Creates a new JSONWrapper object.
      */
-    public JSONWrapper() {
+    public JSON() {
         super();
     }
 
@@ -262,7 +262,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
      *
      * @param map the map to convert.
      */
-    public JSONWrapper(Map map) {
+    public JSON(Map map) {
         super(map);
     }
 
@@ -273,7 +273,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
      * @throws MalformedJsonException if the JSON is malformed.
      * @throws IOException            if any exception is thrown.
      */
-    public JSONWrapper(File file) throws IOException, MalformedJsonException {
+    public JSON(File file) throws IOException, MalformedJsonException {
         this(String.join("", Files.readAllLines(file.toPath())));
     }
 
@@ -285,9 +285,9 @@ public class JSONWrapper extends LinkedHashMap implements Map {
      * @param json the text.
      * @throws MalformedJsonException thrown if there is an issue with the JSON.
      */
-    public JSONWrapper(String json) throws MalformedJsonException {
+    public JSON(String json) throws MalformedJsonException {
         if (!json.startsWith("{") && !json.endsWith("}")) throw new MalformedJsonException();
-        Pair<String, Map> pair = JSONWrapper.parseMap(json, true);
+        Pair<String, Map> pair = JSON.parseMap(json, true);
         this.putAll(pair.getSecond());
     }
 
@@ -298,7 +298,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
      */
     @Override
     public String toString() {
-        return JSONWrapper.toString(this, false, 0);
+        return JSON.toString(this, false, 0);
     }
 
     /**
@@ -307,7 +307,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
      * @return the pretty JSON text.
      */
     public String toPrettyString() {
-        return JSONWrapper.toString(this, true, 2);
+        return JSON.toString(this, true, 2);
     }
 
     /**
@@ -317,7 +317,7 @@ public class JSONWrapper extends LinkedHashMap implements Map {
      * @return the pretty JSON text.
      */
     public String toPrettyString(int indentation) {
-        return JSONWrapper.toString(this, true, indentation);
+        return JSON.toString(this, true, indentation);
     }
 
     private static class StringifyJSON {
