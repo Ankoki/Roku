@@ -9,6 +9,7 @@ import com.ankoki.roku.bukkit.boards.Board;
 import com.ankoki.roku.bukkit.guis.GUI;
 import com.ankoki.roku.bukkit.guis.GUIHandler;
 import com.ankoki.roku.bukkit.guis.PaginatedGUI;
+import com.ankoki.roku.bukkit.misc.BukkitMisc;
 import com.ankoki.roku.bukkit.misc.ItemUtils;
 import com.ankoki.roku.misc.ReflectionUtils;
 import com.ankoki.roku.misc.Version;
@@ -48,6 +49,7 @@ public class BukkitImpl extends JavaPlugin implements Listener {
                 event.setCancelled(true);
                 HumanEntity entity = event.getWhoClicked();
                 entity.sendMessage(COMMAND_PREFIX + "§cYou have clicked the 로쿠 test 그에");
+                entity.sendMessage(COMMAND_PREFIX + BukkitMisc.colourHex("&cTest hex colouring, <#95B759>this should be a nice green."));
             }).setDragEvent(event -> event.setCancelled(true));
     private PaginatedGUI TEST_PAGINATED_GUI = null;
 
@@ -71,7 +73,6 @@ public class BukkitImpl extends JavaPlugin implements Listener {
                             .setDragEvent(event -> event.setCancelled(true)));
             GUI.registerGUI(TEST_PAGINATED_GUI);
             BukkitImpl.info("Test GUI has been created and registered.");
-            this.getServer().getPluginManager().registerEvents(this, this);
         }
         this.getServer().getPluginManager().registerEvents(new GUIHandler(), this);
         this.getServer().getPluginCommand("roku").setExecutor(this);
@@ -86,6 +87,7 @@ public class BukkitImpl extends JavaPlugin implements Listener {
 
     /**
      * Sends an info level message to the console.
+     *
      * @param log the text.
      */
     public static void info(String log) {
@@ -94,6 +96,7 @@ public class BukkitImpl extends JavaPlugin implements Listener {
 
     /**
      * Sends a warning level message to the console.
+     *
      * @param warning the text.
      */
     public static void warning(String warning) {
@@ -102,6 +105,7 @@ public class BukkitImpl extends JavaPlugin implements Listener {
 
     /**
      * Sends an error level message to the console.
+     *
      * @param error the text.
      */
     public static void error(String error) {
@@ -110,6 +114,7 @@ public class BukkitImpl extends JavaPlugin implements Listener {
 
     /**
      * Gets the BukkitImpl instance.
+     *
      * @return the instance.
      */
     public static BukkitImpl getInstance() {
@@ -118,6 +123,7 @@ public class BukkitImpl extends JavaPlugin implements Listener {
 
     /**
      * Gets the unsafe values of the bukkit server.
+     *
      * @return the unsafe.
      */
     public static UnsafeValues getUnsafe() {
@@ -126,6 +132,7 @@ public class BukkitImpl extends JavaPlugin implements Listener {
 
     /**
      * Whether Roku is on a development version.
+     *
      * @return true if Roku version ends with -dev.
      */
     public boolean isDev() {
@@ -134,6 +141,7 @@ public class BukkitImpl extends JavaPlugin implements Listener {
 
     /**
      * Gets the current server version.
+     *
      * @return the current server version.
      */
     public Version getServerVersion() {
@@ -161,9 +169,8 @@ public class BukkitImpl extends JavaPlugin implements Listener {
         }
     }
 
-    @EventHandler
-    private void onJoin(PlayerJoinEvent event) {
-        Board board = Board.of(event.getPlayer());
+    private void enableTestBoard(Player player) {
+        Board board = Board.of(player);
         board.setTitle("§7§lROKU §f• §a§oDEVELOPMENT");
         board.setLine(1, "§c • Bottom •");
         board.setLine(2, "§f");
@@ -179,8 +186,9 @@ public class BukkitImpl extends JavaPlugin implements Listener {
                     case "ADVREVOKE" -> Advancement.revokeAdvancement(player, Advancement.getAdvancement(ADVANCEMENT_KEY));
                     case "GUI" -> TEST_GUI.openTo(player);
                     case "PAGINATEDGUI" -> TEST_PAGINATED_GUI.openTo(player);
+                    case "SCOREBOARD" -> this.enableTestBoard(player);
                 }
-                sender.sendMessage(COMMAND_PREFIX + "done something with the arg " + args[0]);
+                sender.sendMessage(COMMAND_PREFIX + "§7executed the argument §e" + args[0] + "§7 if applicable.");
             }
         } else sender.sendMessage(COMMAND_PREFIX + "Thank you for using Roku v" + rokuVersion);
         return true;

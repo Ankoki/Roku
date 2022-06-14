@@ -151,8 +151,8 @@ public class WebRequest {
     public Optional<String> execute() throws IOException {
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         if (type == RequestType.PATCH) {
-            con.setRequestProperty("X-HTTP-Method-Override", "PATCH");
             con.setRequestMethod("POST");
+            con.setRequestProperty("X-HTTP-Method-Override", "PATCH");
         } else con.setRequestMethod(type.getMethod());
         for (Pair<String, String> header : headers) con.setRequestProperty(header.getFirst(), header.getSecond());
         if (connectTimeout != -1) con.setConnectTimeout(connectTimeout);
@@ -214,6 +214,7 @@ public class WebRequest {
         PUT("PUT"),
         DELETE("DELETE"),
         TRACE("TRACE"),
+        // Only supported by some hosts.
         PATCH("PATCH");
 
         final String method;

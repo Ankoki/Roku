@@ -1,6 +1,7 @@
 # ROKU  
 
 Roku is a library to help with bukkit, web requests, JSON and more.  
+Please note that the Bukkit library only supports paper servers that are 1.13+.
 > ## **IMPORTANT NOTE**  
 > This library is still in early development. Most features I plan to add are either unfinished, slightly broken, or not even started yet.  
 > **Use this library with caution.**
