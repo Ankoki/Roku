@@ -33,7 +33,7 @@ public class ReflectionUtils {
         MC_SERVER_VERSION = version;
         MC_NEW_NMS = newNms;
         try {
-            getHandle = Class.forName("net.minecraft.server." + MC_SERVER_VERSION + ".entity.CraftPlayer")
+            getHandle = Class.forName("org.bukkit.craftbukkit." + MC_SERVER_VERSION + ".entity.CraftPlayer")
                     .getDeclaredMethod("getHandle");
             playerConnection = getNMSClass("server.level", "EntityPlayer")
                     .getDeclaredField(BukkitImpl.getInstance().getServerVersion().isNewerThan(1, 16, 5) ? "b" : "playerConnection");
