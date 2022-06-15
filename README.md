@@ -6,7 +6,7 @@ Please note that the Bukkit library only supports paper servers that are 1.13+.
 > This library is still in early development. Most features I plan to add are either unfinished, slightly broken, or not even started yet.  
 > **Use this library with caution.**
 
-## Importing and Shading.
+## Importing, Shading and Setup.
 
 Whilst this project is in development, you can still import and shade it into your project by utilising Jitpack.  
 To import this using maven, you can use the following.
@@ -37,6 +37,23 @@ dependencies {
     implementation 'com.github.Ankoki:Roku:master-SNAPSHOT'
 }
 ```
+
+Now you have Roku in your project, you can use all of our features!  
+However, if you are using the Bukkit area of Roku, you will need to call `BukkitImpl#setupRoku(JavaPlugin)`.  
+This method takes your JavaPlugin instance and uses it to register our listeners that we need to. This is how it could look:
+```java
+import com.ankoki.roku.bukkit.BukkitImpl;
+import org.bukkit.plugin.java.JavaPlugin;
+
+public class YourPlugin extends JavaPlugin {
+
+    @Override
+    public void onEnable() {
+        BukkitImpl.setupRoku(this);
+    }
+}
+```  
+Now you're all done!
 ## Examples  
 
 Here you can find examples for most features within Roku.

@@ -76,13 +76,13 @@ public class ReflectionUtils {
     /**
      * Gets the nms class depending on version.
      *
-     * @param nmsClass the nms class.
      * @param nmsPackage the nms package.
+     * @param nmsClass the nms class.
      * @return the nms class.
      */
-    public static Class<?> getNMSClass(String nmsClass, String nmsPackage) {
+    public static Class<?> getNMSClass(String nmsPackage, String nmsClass) {
         try {
-            String name = MC_NEW_NMS ? nmsPackage + "." + nmsClass : "net.minecraft.server." + MC_SERVER_VERSION + "." + nmsClass;
+            String name = MC_NEW_NMS ?  "net.minecraft." + nmsPackage + "." + nmsClass : "net.minecraft." + MC_SERVER_VERSION + "." + nmsClass;
             return Class.forName(name);
         } catch (ClassNotFoundException ex) {
             ex.printStackTrace();
