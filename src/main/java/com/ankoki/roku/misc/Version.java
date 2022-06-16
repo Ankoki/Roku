@@ -1,9 +1,15 @@
 package com.ankoki.roku.misc;
 
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
+
 /**
  * Class to make comparing and storing versions easy.
  */
 public class Version {
+
+    private final String suffix;
 
     /**
      * Gets a new version from a string.
@@ -29,6 +35,10 @@ public class Version {
     private Version(String version) {
         String[] indices = version.split("\\.");
         if (indices.length == 0) throw new IllegalArgumentException();
+        if (indices[indices.length - 1].startsWith("-")) {
+            suffix = indices[indices.length - 1].replaceFirst("-", "");
+            indices = Arrays.copyOf(indices, indices.length - 1);
+        } else suffix = null;
         this.version = new int[indices.length];
         for (int i = 0; i < indices.length; i++) {
             String index = indices[i];
@@ -41,6 +51,7 @@ public class Version {
 
     private Version(int... version) {
         this.version = version;
+        suffix = null;
     }
 
     protected int[] getVersion() {
@@ -84,5 +95,30 @@ public class Version {
         for (int i = 0; i < smallest.getVersion().length; i++) {
             if (foreignVersion[i] < this.version[i]) return true;
         } return false;
+    }
+
+    /**
+     * Gets the suffix of the version if it was given.
+     * @return the suffix.
+     */
+    public @Nullable String getSuffix() {
+        return suffix;
+    }
+
+    /**
+     * Checks if there is a suffix to the version.
+     * @return if the suffix isn't null.
+     */
+    public boolean hasSuffix() {
+        return suffix != null;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (int i : version) builder.append(i).append(".");
+        builder.setLength(builder.length() - 1);
+        if (suffix != null) builder.append("-").append(suffix);
+        return builder.toString();
     }
 }

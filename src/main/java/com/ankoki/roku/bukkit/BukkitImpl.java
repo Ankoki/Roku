@@ -1,5 +1,6 @@
 package com.ankoki.roku.bukkit;
 
+import com.ankoki.roku.Roku;
 import com.ankoki.roku.bukkit.advancements.Advancement;
 import com.ankoki.roku.bukkit.advancements.AdvancementTrigger;
 import com.ankoki.roku.bukkit.advancements.Background;
@@ -23,9 +24,7 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.InvalidDescriptionException;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,16 +36,13 @@ import java.util.logging.Logger;
 public class BukkitImpl extends JavaPlugin implements Listener {
 
     private static BukkitImpl instance;
-    private static Logger logger = Logger.getLogger("Roku");
-    private PluginDescriptionFile description;
-    private String rokuVersion;
-    private boolean dev;
+    private static final Logger logger = Logger.getLogger("Roku");
     private static final String COMMAND_PREFIX = "§7§oRoku; §f";
-    private final Version serverVersion = Version.of(Bukkit.getServer().getBukkitVersion().split("-")[0]);
+    private static final Version serverVersion = Version.of(Bukkit.getServer().getBukkitVersion().split("-")[0]);
 
     // DEV
-    private final NamespacedKey ADVANCEMENT_KEY = new NamespacedKey(this, "roku_test");
-    private final GUI TEST_GUI = new GUI("§fROKU§8. .§1그에", 27)
+    private static NamespacedKey ADVANCEMENT_KEY = null;
+    private static final GUI TEST_GUI = new GUI("§fROKU§8. .§1그에", 27)
             .setShape("xxxxxxxxx", "xxxxAxxxx", "xxxxxxxxx")
             .setShapeItem('x', ItemUtils.getBlank(Material.BLACK_STAINED_GLASS_PANE))
             .setShapeItem('A', ItemUtils.getSkull("3ec6c6e00a6ad055f250546a8c0da070df4613a5f65517a9933bd5de969d8406", "§f"))
@@ -56,7 +52,7 @@ public class BukkitImpl extends JavaPlugin implements Listener {
                 entity.sendMessage(COMMAND_PREFIX + "§cYou have clicked the 로쿠 test 그에");
                 entity.sendMessage(COMMAND_PREFIX + BukkitMisc.colourHex("&cTest hex colouring, <#95B759>this should be a nice green."));
             }).setDragEvent(event -> event.setCancelled(true));
-    private PaginatedGUI TEST_PAGINATED_GUI = null;
+    private static PaginatedGUI TEST_PAGINATED_GUI = null;
 
     /**
      * This needs to be called if Roku is being shaded, and not put on the bukkit server.
@@ -64,36 +60,9 @@ public class BukkitImpl extends JavaPlugin implements Listener {
      * @param owning the plugin that will control roku.
      */
     public static void setupRoku(JavaPlugin owning) {
-        instance = new BukkitImpl();
-        try {
-            instance.description = new PluginDescriptionFile(BukkitImpl.class.getResourceAsStream("plugin.yml"));
-        } catch (InvalidDescriptionException ex) {
-            BukkitImpl.error("There was an error with the Roku plugin.yml. Please report this.");
-            ex.printStackTrace();
-            return;
-        }
-        instance.rokuVersion = instance.description.getVersion();
-        instance.dev = instance.rokuVersion.endsWith("-dev");
         ReflectionUtils.bukkitSetup(Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3], instance.serverVersion.isNewerThan(1, 16));
-        if (instance.isDev()) {
-            BukkitImpl.warning("Development build detected, if this is not intended, please report this on the github.");
-            instance.advancementTest();
-            GUI.registerGUI(instance.TEST_GUI);
-            instance.TEST_PAGINATED_GUI = new PaginatedGUI(new GUI("First page :)", 18)
-                    .setShape("---------", "aaaaaaaaa")
-                    .setShapeItem('-', ItemUtils.getBlank(Material.CHAIN))
-                    .setShapeItem('a', ItemUtils.getBlank(Material.COOKIE))
-                    .setSlot(2, PaginatedGUI.makeButton("next", ItemUtils.getBlank(Material.BONE))))
-                    .registerPage("next", 1, new GUI("Second page!!!!!!", 9)
-                            .setShape("----a----")
-                            .setShapeItem('-', ItemUtils.getBlank(Material.BLACK_BED))
-                            .addClickEvent(event -> event.setCancelled(true))
-                            .setDragEvent(event -> event.setCancelled(true)));
-            GUI.registerGUI(instance.TEST_PAGINATED_GUI);
-            BukkitImpl.info("Test GUI has been created and registered.");
-        }
+        if (Roku.isDevelopmentVersion()) BukkitImpl.setupDev(owning);
         Bukkit.getServer().getPluginManager().registerEvents(new GUIHandler(), owning);
-        Bukkit.getServer().getPluginCommand("roku").setExecutor(instance);
         BukkitImpl.info("§8- §7ROKU §8- §aENABLED §7-");
     }
 
@@ -101,25 +70,7 @@ public class BukkitImpl extends JavaPlugin implements Listener {
     public void onEnable() {
         instance = this;
         ReflectionUtils.bukkitSetup(this.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3], serverVersion.isNewerThan(1, 16));
-        this.rokuVersion = this.description.getVersion();
-        this.dev = rokuVersion.endsWith("-dev");
-        if (this.isDev()) {
-            BukkitImpl.warning("Development build detected, if this is not intended, please report this on the github.");
-            this.advancementTest();
-            GUI.registerGUI(TEST_GUI);
-            TEST_PAGINATED_GUI = new PaginatedGUI(new GUI("First page :)", 18)
-                    .setShape("---------", "aaaaaaaaa")
-                    .setShapeItem('-', ItemUtils.getBlank(Material.CHAIN))
-                    .setShapeItem('a', ItemUtils.getBlank(Material.COOKIE))
-                    .setSlot(2, PaginatedGUI.makeButton("next", ItemUtils.getBlank(Material.BONE))))
-                    .registerPage("next", 1, new GUI("Second page!!!!!!", 9)
-                            .setShape("----a----")
-                            .setShapeItem('-', ItemUtils.getBlank(Material.BLACK_BED))
-                            .addClickEvent(event -> event.setCancelled(true))
-                            .setDragEvent(event -> event.setCancelled(true)));
-            GUI.registerGUI(TEST_PAGINATED_GUI);
-            BukkitImpl.info("Test GUI has been created and registered.");
-        }
+        if (Roku.isDevelopmentVersion()) BukkitImpl.setupDev(this);
         this.getServer().getPluginManager().registerEvents(new GUIHandler(), this);
         this.getServer().getPluginCommand("roku").setExecutor(this);
         BukkitImpl.info("§8- §7ROKU §8- §aENABLED §7-");
@@ -129,6 +80,25 @@ public class BukkitImpl extends JavaPlugin implements Listener {
     public void onDisable() {
         HandlerList.unregisterAll((Plugin) this);
         instance = null;
+    }
+
+    private static void setupDev(JavaPlugin owning) {
+        BukkitImpl.warning("Development build detected, if this is not intended, please report this on the github.");
+        ADVANCEMENT_KEY = new NamespacedKey(owning, "roku_test");
+        BukkitImpl.advancementTest();
+        GUI.registerGUI(TEST_GUI);
+        TEST_PAGINATED_GUI = new PaginatedGUI(new GUI("First page :)", 18)
+                .setShape("---------", "aaaaaaaaa")
+                .setShapeItem('-', ItemUtils.getBlank(Material.CHAIN))
+                .setShapeItem('a', ItemUtils.getBlank(Material.COOKIE))
+                .setSlot(2, PaginatedGUI.makeButton("next", ItemUtils.getBlank(Material.BONE))))
+                .registerPage("next", 1, new GUI("Second page!!!!!!", 9)
+                        .setShape("----a----")
+                        .setShapeItem('-', ItemUtils.getBlank(Material.BLACK_BED))
+                        .addClickEvent(event -> event.setCancelled(true))
+                        .setDragEvent(event -> event.setCancelled(true)));
+        GUI.registerGUI(TEST_PAGINATED_GUI);
+        BukkitImpl.info("Test GUI has been created and registered.");
     }
 
     /**
@@ -177,25 +147,16 @@ public class BukkitImpl extends JavaPlugin implements Listener {
     }
 
     /**
-     * Whether Roku is on a development version.
-     *
-     * @return true if Roku version ends with -dev.
-     */
-    public boolean isDev() {
-        return dev;
-    }
-
-    /**
      * Gets the current server version.
      *
      * @return the current server version.
      */
-    public Version getServerVersion() {
+    public static Version getServerVersion() {
         return serverVersion;
     }
 
 
-    private void advancementTest() {
+    private static void advancementTest() {
         try {
             // Advancements are persistent once registered, so only
             // register a new one if it doesn't exist!
@@ -215,7 +176,7 @@ public class BukkitImpl extends JavaPlugin implements Listener {
         }
     }
 
-    private void enableTestBoard(Player player) {
+    private static void enableTestBoard(Player player) {
         Board board = Board.of(player);
         board.setTitle("§7§lROKU §f• §a§oDEVELOPMENT");
         board.setLine(1, "§c • Bottom •");
@@ -225,7 +186,7 @@ public class BukkitImpl extends JavaPlugin implements Listener {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (this.isDev()) {
+        if (Roku.isDevelopmentVersion()) {
             if (sender instanceof Player player && args.length == 1) {
                 switch (args[0].toUpperCase()) {
                     case "ADVGIVE" -> Advancement.awardAdvancement(player, Advancement.getAdvancement(ADVANCEMENT_KEY));
@@ -236,7 +197,7 @@ public class BukkitImpl extends JavaPlugin implements Listener {
                 }
                 sender.sendMessage(COMMAND_PREFIX + "§7executed the argument §e" + args[0] + "§7 if applicable.");
             }
-        } else sender.sendMessage(COMMAND_PREFIX + "Thank you for using Roku v" + rokuVersion);
+        } else sender.sendMessage(COMMAND_PREFIX + "Thank you for using Roku v" + Roku.getVersion());
         return true;
     }
 }

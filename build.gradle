@@ -1,3 +1,5 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 apply plugin: 'java'
 apply plugin: 'maven-publish'
 
@@ -36,6 +38,6 @@ wrapper {
 }
 
 jar {
-    ant.replace(file : 'src/main/resources/plugin.yml', token: '@VERSION@', value: this.version)
+    filter(ReplaceTokens, tokens: ['@VERSION@': this.version])
     archiveName 'Roku.jar'
 }
