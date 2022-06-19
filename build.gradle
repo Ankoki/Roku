@@ -38,6 +38,6 @@ wrapper {
 }
 
 jar {
-    filter(ReplaceTokens, tokens: ['@VERSION@': this.version])
+    //filter(ReplaceTokens, tokens: ['@VERSION@': this.version])
     archiveName 'Roku.jar'
 }
