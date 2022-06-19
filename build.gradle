@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'io.papermc.paper:paper-api:1.18.1-R0.1-SNAPSHOT'
+    compileOnly 'io.papermc.paper:paper-api:1.19-R0.1-SNAPSHOT'
 }
 
 test {
@@ -38,6 +38,8 @@ wrapper {
 }
 
 jar {
-    //filter(ReplaceTokens, tokens: ['@VERSION@': this.version])
+    filter(ReplaceTokens, file: ['src/main/resources/plugin.yml', 'src/main/java/com/ankoki/roku/Roku.java'], tokens: ['@VERSION@', this.version])
+    // ant.replace(file : 'src/main/resources/plugin.yml', token: '@VERSION@', value: this.version)
+    // ant.replace(file : 'src/main/java/com/ankoki/roku/Roku.java', token: '@VERSION@', value: this.version)
     archiveName 'Roku.jar'
 }
