@@ -169,9 +169,7 @@ public class WebRequest {
         BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         String line;
         StringBuilder content = new StringBuilder();
-        while ((line = in.readLine()) != null) {
-            content.append(line);
-        }
+        while ((line = in.readLine()) != null) content.append(line);
         in.close();
         con.disconnect();
         String response = content.length() > 0 ? content.toString() : null;
