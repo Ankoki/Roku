@@ -38,8 +38,7 @@ wrapper {
 }
 
 jar {
-    filter(ReplaceTokens, file: ['src/main/resources/plugin.yml', 'src/main/java/com/ankoki/roku/Roku.java'], tokens: ['@VERSION@', this.version])
-    // ant.replace(file : 'src/main/resources/plugin.yml', token: '@VERSION@', value: this.version)
-    // ant.replace(file : 'src/main/java/com/ankoki/roku/Roku.java', token: '@VERSION@', value: this.version)
+    ant.replace(file : 'src/main/resources/plugin.yml', token: '@VERSION@', value: this.version)
+    ant.replace(file : 'src/main/java/com/ankoki/roku/Roku.java', token: '@VERSION@', value: this.version)
     archiveName 'Roku.jar'
 }
