@@ -8,9 +8,13 @@ Please note that the Bukkit library only supports paper servers that are 1.13+.
 
 ## Importing, Shading and Setup.
 
-Whilst this project is in development, you can still import and shade it into your project by utilising Jitpack.  
+Whilst this project is in development, you can still import and shade it into your project by utilising Jitpack.
+
+[![](https://jitpack.io/v/Ankoki/Roku.svg)](https://jitpack.io/#Ankoki/Roku)  
+Replace VERSION in these examples with the version shown above.  
+  
 To import this using maven, you can use the following.
-```xml
+```xml 
 <repositories>
     <repository>
         <id>jitpack.io</id>
@@ -22,7 +26,7 @@ To import this using maven, you can use the following.
     <dependency>
         <groupId>com.github.Ankoki</groupId>
         <artifactId>Roku</artifactId>
-        <version>master-SNAPSHOT</version>
+        <version>CURRENT-VERSION</version>
         <scope>compile</scope>
     </dependency>
 </dependencies>
@@ -34,7 +38,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.Ankoki:Roku:master-SNAPSHOT'
+    implementation 'com.github.Ankoki:Roku:VERSION'
 }
 ```
 

@@ -294,7 +294,9 @@ public class GUI extends IGUI {
     @Override
     public void onDrag(InventoryDragEvent event) {
         HumanEntity entity = event.getWhoClicked();
-        if (event.getInventory() == entity.getInventory()) event.setCancelled(!this.canClickOwnInventory());
-        else if (dragEvent != null) dragEvent.onDrag(event);
+        if (event.getInventory() == entity.getInventory()) {
+            event.setCancelled(!this.canClickOwnInventory());
+            if (dragEvent != null) dragEvent.onDrag(event);
+        }
     }
 }
