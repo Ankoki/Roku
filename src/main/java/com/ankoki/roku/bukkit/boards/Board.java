@@ -94,7 +94,7 @@ public class Board {
      */
     public void setTitle(@NotNull String title) {
         title = BukkitMisc.colour(title);
-        if (ChatColor.stripColor(title).length() > 128) throw new IllegalArgumentException("Paramater 'title' cant be more than 128 characters.");
+        if (ChatColor.stripColor(title).length() > 128) throw new IllegalArgumentException("Parameter 'title' cant be more than 128 characters.");
         board.setDisplayName(title);
     }
 
@@ -145,9 +145,7 @@ public class Board {
             this.deleteLine(ind);
             ind--;
         }
-        for (int i = contents.length - 1; i > -1; i--) {
-            this.setLine(i, contents[i]);
-        }
+        for (int i = contents.length - 1; i > -1; i--) this.setLine(i, contents[i]);
     }
 
     /**
@@ -163,9 +161,7 @@ public class Board {
      * Clears all lines of the scoreboard.
      */
     public void clearLines() {
-        for (int i : NumberUtils.range(0, 14)) {
-            current.resetScores(DEFAULT_ENTRIES[i]);;
-        }
+        for (int i : NumberUtils.range(0, 14)) current.resetScores(DEFAULT_ENTRIES[i]);
     }
 
     /**

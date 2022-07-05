@@ -12,6 +12,7 @@ import com.ankoki.roku.bukkit.guis.GUIHandler;
 import com.ankoki.roku.bukkit.guis.PaginatedGUI;
 import com.ankoki.roku.bukkit.misc.BukkitMisc;
 import com.ankoki.roku.bukkit.misc.ItemUtils;
+import com.ankoki.roku.bukkit.misc.Metrics;
 import com.ankoki.roku.misc.ReflectionUtils;
 import com.ankoki.roku.misc.Version;
 import org.bukkit.Bukkit;
@@ -62,6 +63,7 @@ public class BukkitImpl extends JavaPlugin implements Listener {
     public static void setupRoku(JavaPlugin owning) {
         ReflectionUtils.bukkitSetup(Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3], instance.serverVersion.isNewerThan(1, 16));
         if (Roku.isDevelopmentVersion()) BukkitImpl.setupDev(owning);
+        new Metrics(owning, 15680);
         Bukkit.getServer().getPluginManager().registerEvents(new GUIHandler(), owning);
         BukkitImpl.info("§8- §7ROKU §8- §aENABLED §7-");
     }
@@ -71,6 +73,7 @@ public class BukkitImpl extends JavaPlugin implements Listener {
         instance = this;
         ReflectionUtils.bukkitSetup(this.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3], serverVersion.isNewerThan(1, 16));
         if (Roku.isDevelopmentVersion()) BukkitImpl.setupDev(this);
+        new Metrics(this, 15680);
         this.getServer().getPluginManager().registerEvents(new GUIHandler(), this);
         this.getServer().getPluginCommand("roku").setExecutor(this);
         BukkitImpl.info("§8- §7ROKU §8- §aENABLED §7-");
