@@ -69,20 +69,16 @@ public class JSON extends LinkedHashMap<String, Object> implements Map<String, O
         }
         try {
             return Integer.parseInt(value);
-        } catch (NumberFormatException ignored) {
-        }
+        } catch (NumberFormatException ignored) {}
         try {
             return Long.parseLong(value);
-        } catch (NumberFormatException ignored) {
-        }
+        } catch (NumberFormatException ignored) {}
         try {
             return Double.parseDouble(value);
-        } catch (NumberFormatException ignored) {
-        }
+        } catch (NumberFormatException ignored) {}
         try {
             return Float.parseFloat(value);
-        } catch (NumberFormatException ignored) {
-        }
+        } catch (NumberFormatException ignored) {}
         if (value.equalsIgnoreCase("TRUE")) return true;
         if (value.equalsIgnoreCase("FALSE")) return false;
         if (value.equalsIgnoreCase("NULL")) return null;
