@@ -1,11 +1,13 @@
 package com.ankoki.roku.bukkit.guis;
 
 import com.ankoki.roku.bukkit.guis.events.ClickEvent;
+import com.ankoki.roku.bukkit.guis.events.CloseEvent;
 import com.ankoki.roku.bukkit.guis.events.DragEvent;
 import com.ankoki.roku.misc.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -69,11 +71,12 @@ public class GUI extends IGUI {
     }
 
     private final Inventory inventory;
+    private boolean canClickOwn;
     private List<String> shape;
-    private boolean canClickOwn = false;
 
     private Map<Integer, ClickEvent> clickEvents = new ConcurrentHashMap<>();
     private DragEvent dragEvent = null;
+    private CloseEvent closeEvent = null;
 
     /**
      * Creates a new GUI inventory.
@@ -144,6 +147,7 @@ public class GUI extends IGUI {
         this.canClickOwn = gui.canClickOwn;
         this.clickEvents = gui.clickEvents;
         this.dragEvent = gui.dragEvent;
+        this.closeEvent = gui.closeEvent;
     }
 
     /**
@@ -199,18 +203,18 @@ public class GUI extends IGUI {
      *
      * @return if entity can click or drag their own inventory.
      */
-    public boolean canClickOwnInventory() {
+    public boolean canClickOwn() {
         return this.canClickOwn;
     }
 
     /**
-     * Sets if entity can click or drag their own inventory.
+     * Sets if entity can click or drag within their own inventory.
      *
-     * @param canClickOwn if entity can click or drag in their inventory.
+     * @param clickable if entity can click or drag in their inventory.
      * @return current GUI for chaining.
      */
-    public GUI canClickOwnInventory(boolean canClickOwn) {
-        this.canClickOwn = canClickOwn;
+    public GUI setOwnClickable(boolean clickable) {
+        this.canClickOwn = clickable;
         return this;
     }
 
@@ -230,11 +234,22 @@ public class GUI extends IGUI {
     /**
      * Sets the current GUIs drag event.
      *
-     * @param event the runnable you want to be run when clicked.
+     * @param event the runnable you want to be run when dragged.
      * @return current GUI for chaining.
      */
     public GUI setDragEvent(DragEvent event) {
         this.dragEvent = event;
+        return this;
+    }
+
+    /**
+     * Sets the current GUIs close event.
+     *
+     * @param event the runnable you want to be run when closed.
+     * @return current GUI for chaining.
+     */
+    public GUI setCloseEvent(CloseEvent event) {
+        this.closeEvent = event;
         return this;
     }
 
@@ -280,7 +295,7 @@ public class GUI extends IGUI {
     @Override
     public void onClick(InventoryClickEvent event) {
         HumanEntity entity = event.getWhoClicked();
-        if (event.getClickedInventory() == entity.getInventory()) event.setCancelled(!this.canClickOwnInventory());
+        if (event.getClickedInventory() == entity.getInventory()) event.setCancelled(!this.canClickOwn);
         else {
             int slot = event.getSlot();
             if (clickEvents.containsKey(slot)) {
@@ -293,10 +308,13 @@ public class GUI extends IGUI {
 
     @Override
     public void onDrag(InventoryDragEvent event) {
-        HumanEntity entity = event.getWhoClicked();
-        if (event.getInventory() == entity.getInventory()) {
-            event.setCancelled(!this.canClickOwnInventory());
-            if (dragEvent != null) dragEvent.onDrag(event);
-        }
+        if (event.getInventory() == event.getWhoClicked().getInventory()) {
+            event.setCancelled(!this.canClickOwn);
+        } else if (dragEvent != null) dragEvent.onDrag(event);
+    }
+
+    @Override
+    public void onClose(InventoryCloseEvent event) {
+        if (closeEvent != null) closeEvent.onClose(event);
     }
 }

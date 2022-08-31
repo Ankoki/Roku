@@ -61,7 +61,7 @@ public class BukkitImpl extends JavaPlugin implements Listener {
      * @param owning the plugin that will control roku.
      */
     public static void setupRoku(JavaPlugin owning) {
-        ReflectionUtils.bukkitSetup(Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3], instance.serverVersion.isNewerThan(1, 16));
+        ReflectionUtils.bukkitSetup(Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3], serverVersion.isNewerThan(1, 16));
         if (Roku.isDevelopmentVersion()) BukkitImpl.setupDev(owning);
         new Metrics(owning, 15680);
         Bukkit.getServer().getPluginManager().registerEvents(new GUIHandler(), owning);
@@ -71,12 +71,7 @@ public class BukkitImpl extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         instance = this;
-        ReflectionUtils.bukkitSetup(this.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3], serverVersion.isNewerThan(1, 16));
-        if (Roku.isDevelopmentVersion()) BukkitImpl.setupDev(this);
-        new Metrics(this, 15680);
-        this.getServer().getPluginManager().registerEvents(new GUIHandler(), this);
-        this.getServer().getPluginCommand("roku").setExecutor(this);
-        BukkitImpl.info("§8- §7ROKU §8- §aENABLED §7-");
+        BukkitImpl.setupRoku(this);
     }
 
     @Override

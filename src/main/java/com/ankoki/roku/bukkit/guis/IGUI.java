@@ -1,13 +1,10 @@
 package com.ankoki.roku.bukkit.guis;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
-import org.jetbrains.annotations.Nullable;
 
 public abstract class IGUI {
 
@@ -19,9 +16,10 @@ public abstract class IGUI {
 
     public void onClick(InventoryClickEvent event){}
     public void onDrag(InventoryDragEvent event){}
+    public void onClose(InventoryCloseEvent event){}
 
     /**
-     * Opens the GUI to entites.
+     * Opens the GUI to entities.
      * @param entities the entities to open the inventory to.
      */
     public void openTo(HumanEntity... entities) {
