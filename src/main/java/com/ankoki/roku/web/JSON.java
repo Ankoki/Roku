@@ -16,6 +16,7 @@ public class JSON extends LinkedHashMap<String, Object> implements Map<String, O
     private static final Pattern KEY_PATTERN = Pattern.compile("\"(.+)?\":[ ]?");
     private static final Pattern KEY_VALUE_PATTERN = Pattern.compile("\"(.+)?\":[ ]?(.+)");
 
+    // <editor-fold defaultstate="collapsed" desc="External Static Methods">
     /**
      * Converts a given Map to a JSON String.
      *
@@ -27,7 +28,9 @@ public class JSON extends LinkedHashMap<String, Object> implements Map<String, O
     public static String toString(Map map, boolean pretty, int indentation) {
         return new StringifyJSON(map, pretty, indentation).toString();
     }
+    // </editor-fold>
 
+    // <editor-fold defaultstate="collapsed" desc="Internal Static Methods">
     /**
      * <strong>INTERNAL USE ONLY</strong>
      * <p>
@@ -91,21 +94,21 @@ public class JSON extends LinkedHashMap<String, Object> implements Map<String, O
      * Gets a pair with the key of a map and the parsed map.
      *
      * @param line the line of map, including ones that are contained.
-     * @return
-     * @throws MalformedJsonException
+     * @param fullJson true if it is the whole json, false if it is a map.
+     * @return a pair containing the map key and the map contents.
+     * @throws MalformedJsonException if the JSON is malformed.
      */
-    private static Pair<String, Map> parseMap(String line, boolean wholeOrArray) throws MalformedJsonException {
+    private static Pair<String, Map> parseMap(String line, boolean fullJson) throws MalformedJsonException {
         Map<String, Object> currentMap = new HashMap<>();
         String key = null;
-        if (!wholeOrArray) key = line.split(":\\{")[0];
+        if (!fullJson) key = line.split(":\\{")[0];
         boolean first = true;
         boolean inQuotes = false;
         boolean inArray = false;
         boolean inMap = false;
         boolean ignoreNext = false;
 
-        String clone = line;
-        if (!wholeOrArray && clone.replace(key, "").equals("{}")) return new Pair<>(key, new HashMap<>());
+        if (!fullJson && line.replace(key, "").equals("{}")) return new Pair<>(key, new HashMap<>());
         else if (line.equals("{}")) return new Pair<>(key, new HashMap<>());
 
         int mapDepth = 0, arrayDepth = 0, index = 0;
@@ -114,7 +117,7 @@ public class JSON extends LinkedHashMap<String, Object> implements Map<String, O
         String currentKey = "";
         List<Object> currentList = new ArrayList<>();
 
-        char[] array = line.toCharArray();
+        final char[] array = line.toCharArray();
 
         for (char ch : array) {
             if (first) {
@@ -226,7 +229,7 @@ public class JSON extends LinkedHashMap<String, Object> implements Map<String, O
                                 inMap = false;
                             } else if (mapDepth < 0) throw new MalformedJsonException();
 
-                        } else if (!inQuotes && currentLine.length() != 1) {
+                        } else if (currentLine.length() != 1) {
                             if (index + 1 != array.length) throw new MalformedJsonException();
                             Pair<String, Object> pair = JSON.matchLine(currentLine.toString());
                             currentMap.put(pair.getFirst(), pair.getSecond());
@@ -245,7 +248,9 @@ public class JSON extends LinkedHashMap<String, Object> implements Map<String, O
         }
         return new Pair<>(key, currentMap);
     }
+    // </editor-fold>
 
+    // <editor-fold defaultstate="collapsed" desc="Constructors">
     /**
      * Creates a new JSONWrapper object.
      */
@@ -286,7 +291,9 @@ public class JSON extends LinkedHashMap<String, Object> implements Map<String, O
         Pair<String, Map> pair = JSON.parseMap(json, true);
         this.putAll(pair.getSecond());
     }
+    // </editor-fold>
 
+    // <editor-fold defaultstate="collapsed" desc="Basic Public Methods">
     /**
      * Converts the current JSONWrapper to a JSON text.
      *
@@ -315,7 +322,9 @@ public class JSON extends LinkedHashMap<String, Object> implements Map<String, O
     public String toPrettyString(int indentation) {
         return JSON.toString(this, true, indentation);
     }
+    // </editor-fold>
 
+    // <editor-fold defaultstate="collapsed" desc="Inner Classes">
     private static class StringifyJSON {
 
         private final String string;
@@ -345,7 +354,9 @@ public class JSON extends LinkedHashMap<String, Object> implements Map<String, O
                     .append("}")
                     .toString();
         }
+        // </editor-fold>
 
+        // <editor-fold defaultstate="collapsed" desc="Internal Object Methods">
         /**
          * <strong>INTERNAL USE ONLY</strong>
          * <p>
@@ -427,4 +438,6 @@ public class JSON extends LinkedHashMap<String, Object> implements Map<String, O
             return string;
         }
     }
+    // </editor-fold>
+
 }

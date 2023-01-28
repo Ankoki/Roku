@@ -1,7 +1,9 @@
 package com.ankoki.roku.bukkit.misc;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.plugin.Plugin;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -71,5 +73,15 @@ public class BukkitMisc {
                 ex.printStackTrace();
             } return null;
         });
+    }
+
+    /**
+     * Checks if a plugin with the given name is on the server and enabled.
+     * @param name the name of the plugin to check.
+     * @return if the plugin is enabled.
+     */
+    public static boolean isPluginEnabled(String name) {
+        Plugin plugin = Bukkit.getPluginManager().getPlugin(name);
+        return plugin != null && plugin.isEnabled();
     }
 }
