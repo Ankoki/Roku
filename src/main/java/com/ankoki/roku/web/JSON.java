@@ -373,8 +373,10 @@ public class JSON extends LinkedHashMap<String, Object> implements Map<String, O
                 else builder.append(number);
             } else if (value instanceof Boolean bool) builder.append(bool);
             else if (value instanceof List list) builder.append(this.writeJson(list, pretty));
+            else if (value instanceof Object[] array) builder.append(this.writeJson(array, pretty));
             else if (value instanceof Map map) builder.append(this.writeJson(map, pretty));
             else if (value instanceof Pair<?,?> pair) builder.append(this.writeJson((Map) pair.getSecond(), pretty));
+            else if (value == null) builder.append(pretty ? " null" : "null");
             else builder.append("\"")
                         .append(StringUtils.escape(value))
                         .append("\"");
@@ -390,10 +392,22 @@ public class JSON extends LinkedHashMap<String, Object> implements Map<String, O
          * @return the finished JSON text.
          */
         private String writeJson(List<?> list, boolean pretty) {
-            if (list.isEmpty()) return "[]";
+            return this.writeJson(list.toArray(new Object[0]), pretty);
+        }
+
+        /**
+         * <strong>INTERNAL USE ONLY</strong>
+         * <p>
+         * Writes a JSON string from an array.
+         *
+         * @param array the array to use.
+         * @return the finished JSON text.
+         */
+        private <T> String writeJson(T[] array, boolean pretty) {
+            if (array.length <= 0) return "[]";
             StringBuilder builder = new StringBuilder("[");
             currentIndentation = currentIndentation + indentationAmount;
-            for (Object value : list) {
+            for (Object value : array) {
                 builder.append(pretty ? "\n" + " ".repeat(currentIndentation) : "")
                         .append(this.writeJson(value, pretty))
                         .append(",");
