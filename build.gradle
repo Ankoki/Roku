@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'maven-publish'
 
 group 'com.ankoki'
-version '1.0-dev'
+version '1.0-DEV'
 
 repositories {
     mavenCentral()
@@ -26,6 +26,21 @@ publishing {
     publications {
         maven(MavenPublication) {
             from components.java
+            version = version
+            groupId = 'com.ankoki'
+            def releases = 'Roku'
+            def devBuild = 'Roku-DEV'
+            artifactId = version.endsWith('DEV') || version.endsWith('BETA') ? devBuild : releases
+        }
+    }
+    repositories {
+        maven {
+            name = 'Roku'
+            url = version.endsWith('DEV') || version.endsWith('BETA') ? 'https://hat.lordoftherin.gs/releases/dev-builds/' : 'https://hat.lordoftherin.gs/releases/'
+            credentials {
+                username = project.repoUser
+                password = project.repoPassword
+            }
         }
     }
 }

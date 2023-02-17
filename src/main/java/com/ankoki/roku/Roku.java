@@ -3,7 +3,7 @@ package com.ankoki.roku;
 import com.ankoki.roku.misc.Version;
 
 public class Roku {
-    private static final Version VERSION = Version.of("@VERSION@");
+    private static final Version VERSION = Version.of("1.0-dev");
 
     /**
      * Gets the version of Roku.
