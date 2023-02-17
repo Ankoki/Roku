@@ -2,7 +2,7 @@ package com.ankoki.roku.bukkit.advancements;
 
 import com.ankoki.roku.bukkit.BukkitImpl;
 import com.ankoki.roku.bukkit.advancements.exceptions.InvalidAdvancementException;
-import com.ankoki.roku.web.JSON;
+import com.ankoki.roku.web.json.JSON;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.advancement.AdvancementProgress;

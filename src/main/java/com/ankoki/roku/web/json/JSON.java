@@ -1,8 +1,8 @@
-package com.ankoki.roku.web;
+package com.ankoki.roku.web.json;
 
 import com.ankoki.roku.misc.Pair;
 import com.ankoki.roku.misc.StringUtils;
-import com.ankoki.roku.web.exceptions.MalformedJsonException;
+import com.ankoki.roku.web.json.exceptions.MalformedJsonException;
 
 import java.io.File;
 import java.io.IOException;
@@ -219,14 +219,28 @@ public class JSON extends LinkedHashMap<String, Object> implements Map<String, O
                             mapDepth--;
                             if (mapDepth == 0) {
                                 if (inArray) {
-                                    currentList.add(JSON.parseMap(currentLine.toString(), true).getSecond());
+                                    Map<String, Object> map = JSON.parseMap(currentLine.toString(), true).getSecond();
+                                    Object fin = map;
+                                    if (map.containsKey("roku-serializable-class")) {
+                                        Class<? extends JSONSerializable> serializable = JSONSerializable.get((String) map.get("roku-serializable-class"));
+                                        if (serializable != null)
+                                            fin = JSONSerializable.deserializeHelper(serializable, map);
+                                    }
+                                    currentList.add(fin);
                                 }
                                 else {
                                     String temp = currentLine.toString().split(":\\{")[0];
                                     String k = StringUtils.removeQuotes(temp);
                                     String l = currentLine.toString().replaceFirst("\"" + k + "\":", "");
                                     Pair<String, Map<String, Object>> pair = JSON.parseMap(l, false);
-                                    currentMap.put(k, pair.getSecond());
+                                    Map<String, Object> map = pair.getSecond();
+                                    Object fin = map;
+                                    if (map.containsKey("roku-serializable-class")) {
+                                        Class<? extends JSONSerializable> serializable = JSONSerializable.get((String) map.get("roku-serializable-class"));
+                                        if (serializable != null)
+                                            fin = JSONSerializable.deserializeHelper(serializable, map);
+                                    }
+                                    currentMap.put(k, fin);
                                 }
                                 currentLine.setLength(0);
                                 inMap = false;
@@ -372,7 +386,12 @@ public class JSON extends LinkedHashMap<String, Object> implements Map<String, O
                 if (number instanceof Double d && d.isInfinite() && d.isNaN()) builder.append("null");
                 else if (number instanceof Float f && f.isInfinite() && f.isNaN()) builder.append("null");
                 else builder.append(number);
-            } else if (value instanceof Boolean bool) builder.append(bool);
+            } else if (value instanceof JSONSerializable serializable) {
+                Map<String, Object> map = serializable.serialize();
+                map.put("roku-serializable-class", serializable.getClass().getPackageName() + "." + serializable.getClass().getName());
+                builder.append(this.writeJson(map, pretty));
+            }
+            else if (value instanceof Boolean bool) builder.append(bool);
             else if (value instanceof List list) builder.append(this.writeJson(list, pretty));
             else if (value instanceof Object[] array) builder.append(this.writeJson(array, pretty));
             else if (value instanceof Map map) builder.append(this.writeJson(map, pretty));

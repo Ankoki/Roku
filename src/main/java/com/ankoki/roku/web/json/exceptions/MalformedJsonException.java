@@ -1,4 +1,4 @@
-package com.ankoki.roku.web.exceptions;
+package com.ankoki.roku.web.json.exceptions;
 
 public class MalformedJsonException extends RuntimeException {
 
