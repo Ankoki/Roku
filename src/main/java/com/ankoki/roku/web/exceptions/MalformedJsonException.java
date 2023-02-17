@@ -1,6 +1,6 @@
 package com.ankoki.roku.web.exceptions;
 
-public class MalformedJsonException extends Exception {
+public class MalformedJsonException extends RuntimeException {
 
     public MalformedJsonException() {
         super("There was an issue parsing your JSON.");
