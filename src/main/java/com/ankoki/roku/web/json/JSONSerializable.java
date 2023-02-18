@@ -22,7 +22,7 @@ public abstract class JSONSerializable {
 	 * @param clazz the class to register.
 	 */
 	public static void register(Class<? extends JSONSerializable> clazz) {
-		String alias = clazz.getPackageName() + "." + clazz.getName();
+		String alias = clazz.getName();
 		if (JSONSerializable.registry.containsKey(alias))
 			throw new IllegalArgumentException("Class '" + alias + "' is already a registered JSONSerializable.");
 		JSONSerializable.registry.put(alias, clazz);

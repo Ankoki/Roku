@@ -221,8 +221,8 @@ public class JSON extends LinkedHashMap<String, Object> implements Map<String, O
                                 if (inArray) {
                                     Map<String, Object> map = JSON.parseMap(currentLine.toString(), true).getSecond();
                                     Object fin = map;
-                                    if (map.containsKey("roku-serializable-class")) {
-                                        Class<? extends JSONSerializable> serializable = JSONSerializable.get((String) map.get("roku-serializable-class"));
+                                    if (map.containsKey("-x")) {
+                                        Class<? extends JSONSerializable> serializable = JSONSerializable.get((String) map.get("-x"));
                                         if (serializable != null)
                                             fin = JSONSerializable.deserializeHelper(serializable, map);
                                     }
@@ -235,8 +235,8 @@ public class JSON extends LinkedHashMap<String, Object> implements Map<String, O
                                     Pair<String, Map<String, Object>> pair = JSON.parseMap(l, false);
                                     Map<String, Object> map = pair.getSecond();
                                     Object fin = map;
-                                    if (map.containsKey("roku-serializable-class")) {
-                                        Class<? extends JSONSerializable> serializable = JSONSerializable.get((String) map.get("roku-serializable-class"));
+                                    if (map.containsKey("-x")) {
+                                        Class<? extends JSONSerializable> serializable = JSONSerializable.get((String) map.get("-x"));
                                         if (serializable != null)
                                             fin = JSONSerializable.deserializeHelper(serializable, map);
                                     }
@@ -302,7 +302,7 @@ public class JSON extends LinkedHashMap<String, Object> implements Map<String, O
      * @throws MalformedJsonException thrown if there is an issue with the JSON.
      */
     public JSON(String json) throws MalformedJsonException {
-        if (!json.startsWith("{") && !json.endsWith("}")) throw new MalformedJsonException();
+        if (!json.startsWith("{") && !json.endsWith("}")) throw new MalformedJsonException("JSON must start with { and end with }.");
         Pair<String, Map<String, Object>> pair = JSON.parseMap(json, true);
         this.putAll(pair.getSecond());
     }
@@ -388,7 +388,7 @@ public class JSON extends LinkedHashMap<String, Object> implements Map<String, O
                 else builder.append(number);
             } else if (value instanceof JSONSerializable serializable) {
                 Map<String, Object> map = serializable.serialize();
-                map.put("roku-serializable-class", serializable.getClass().getPackageName() + "." + serializable.getClass().getName());
+                map.put("-x", serializable.getClass().getName());
                 builder.append(this.writeJson(map, pretty));
             }
             else if (value instanceof Boolean bool) builder.append(bool);
